@@ -19,7 +19,7 @@ class ProductRepository implements IProductRepository {
   }
 
   @override
-  Future<Product> getProduct({required String productId}) async {
+  Future<Product> getProduct({required int productId}) async {
     final productModel = await _productApiClient.getProduct(productId: productId);
     return const ProductMapper().toEntity(productModel);
   }

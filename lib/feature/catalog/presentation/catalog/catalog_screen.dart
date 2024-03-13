@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../domain/entities/product.dart';
 import 'providers/product_list/product_list_provider.dart';
@@ -12,7 +13,7 @@ class CatalogScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productListState = ref.watch(productListNotifier);
+    final productListState = ref.watch(productListProvider);
 
     final child = switch (productListState) {
       ProductListLoading() => const Center(child: CircularProgressIndicator()),
@@ -27,7 +28,7 @@ class CatalogScreen extends ConsumerWidget {
             return _CatalogItemCard(
               key: ValueKey('product_card_${item.id}'),
               product: item,
-              onTap: () {},
+              onTap: () => ProductDetailsRoute(productId: item.id, $extra: item).go(context),
             );
           },
           separatorBuilder: (context, index) => const Gap.v(12),
@@ -62,6 +63,7 @@ class _CatalogItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final imageSize = MediaQuery.sizeOf(context).width * 0.25;
     final originalPrice = product.price / (100 - product.discountPercentage) * 100;
     final numberFormat = NumberFormat('###.##');
@@ -79,11 +81,14 @@ class _CatalogItemCard extends StatelessWidget {
               borderRadius: const BorderRadius.horizontal(
                 left: Radius.circular(12),
               ),
-              child: CachedNetworkImage(
-                fit: BoxFit.cover,
-                imageUrl: product.thumbnailUrl,
-                height: imageSize,
-                width: imageSize,
+              child: Hero(
+                tag: 'product_thumbnail_${product.id}',
+                child: CachedNetworkImage(
+                  fit: BoxFit.cover,
+                  imageUrl: product.thumbnailUrl,
+                  height: imageSize,
+                  width: imageSize,
+                ),
               ),
             ),
             Expanded(
@@ -97,7 +102,7 @@ class _CatalogItemCard extends StatelessWidget {
                   children: [
                     Text(
                       product.title,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: theme.textTheme.titleMedium,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -108,7 +113,7 @@ class _CatalogItemCard extends StatelessWidget {
                           Text(
                             '${numberFormat.format(originalPrice)} \$',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
+                              color: theme.colorScheme.error,
                               decoration: TextDecoration.lineThrough,
                             ),
                           ),

@@ -48,7 +48,7 @@ class _IProductApiClient implements IProductApiClient {
   }
 
   @override
-  Future<ProductModel> getProduct({required String productId}) async {
+  Future<ProductModel> getProduct({required int productId}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -61,7 +61,7 @@ class _IProductApiClient implements IProductApiClient {
     )
             .compose(
               _dio.options,
-              '/{id}',
+              '/${productId}',
               queryParameters: queryParameters,
               data: _data,
             )

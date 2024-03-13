@@ -8,7 +8,8 @@ import '../../../../domain/entities/product.dart';
 
 part 'product_list_state.dart';
 
-final productListNotifier = StateNotifierProvider<ProductListNotifier, ProductListState>(
+final productListProvider =
+    StateNotifierProvider.autoDispose<ProductListNotifier, ProductListState>(
   (ref) => resolveDependency(),
 );
 

@@ -5,7 +5,7 @@ import 'repositories/product_repository.dart';
 abstract interface class ICatalogService {
   Future<PagedResponse<Product>> getAllProducts();
 
-  Future<Product> getProduct({required String productId});
+  Future<Product> getProduct({required int productId});
 }
 
 class CatalogService implements ICatalogService {
@@ -19,6 +19,6 @@ class CatalogService implements ICatalogService {
   Future<PagedResponse<Product>> getAllProducts() => _productRepository.getAllProducts();
 
   @override
-  Future<Product> getProduct({required String productId}) =>
+  Future<Product> getProduct({required int productId}) =>
       _productRepository.getProduct(productId: productId);
 }
