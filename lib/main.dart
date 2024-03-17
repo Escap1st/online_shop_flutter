@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'app.dart';
-import 'feature/catalog/registrar.dart';
+import 'registrar.dart';
 
 void main() {
-  CatalogRegistrar().register();
+  AppRegistrar().register();
   runApp(const OnlineShopApp());
 }

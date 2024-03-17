@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/product.dart';
 import 'providers/product_list/product_list_provider.dart';
 
@@ -44,9 +45,22 @@ class CatalogScreen extends ConsumerWidget {
             onPressed: () {},
             icon: const Icon(Icons.filter_alt_rounded),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.shopping_cart),
+          SizedBox.square(
+            // TODO: shouldn't be 'magic' number
+            dimension: 56,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.shopping_cart),
+                ),
+                const Align(
+                  alignment: Alignment.topRight,
+                  child: _CartPositionsIndicator(),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -132,5 +146,35 @@ class _CatalogItemCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _CartPositionsIndicator extends ConsumerWidget {
+  const _CartPositionsIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final positionsInCart = ref.watch(cartProvider).cart.items.length;
+
+    return positionsInCart > 0
+        ? Container(
+            margin: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.error,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(8),
+              ),
+            ),
+            height: 16,
+            width: 16,
+            child: Text(
+              positionsInCart.toString(),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
+            ),
+          )
+        : const SizedBox.shrink();
   }
 }

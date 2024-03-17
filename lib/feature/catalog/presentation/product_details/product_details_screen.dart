@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/measure_size_widget.dart';
+import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/product.dart';
 import 'providers/product_details_provider.dart';
 
@@ -104,7 +105,10 @@ class _LoadedState extends State<_Loaded> {
           alignment: Alignment.bottomCenter,
           child: MeasureSizeWidget(
             onChange: (size) => setState(() => _footerHeight = size.height),
-            child: _Footer(product: widget.product),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _Footer(product: widget.product),
+            ),
           ),
         )
       ],
@@ -112,27 +116,47 @@ class _LoadedState extends State<_Loaded> {
   }
 }
 
-class _Footer extends StatelessWidget {
+class _Footer extends ConsumerWidget {
   const _Footer({required this.product, super.key});
 
   final Product product;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final itemsInCart = ref.watch(cartProvider).cart.items[product] ?? 0;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: double.maxFinite,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ElevatedButton(
-            onPressed: () {},
-            child: Text('Buy for ${product.price}\$'),
+        if (itemsInCart == 0)
+          SizedBox(
+            width: double.maxFinite,
+            child: ElevatedButton(
+              onPressed: () => ref.read(cartProvider.notifier).addItem(product: product),
+              child: Text('Buy for ${product.price}\$'),
+            ),
+          )
+        else
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () => ref.read(cartProvider.notifier).removeItem(product: product),
+                child: const Icon(Icons.remove),
+              ),
+              const Spacer(),
+              Text(itemsInCart.toString(), style: Theme.of(context).textTheme.bodyLarge,),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: itemsInCart < product.stock
+                    ? () => ref.read(cartProvider.notifier).addItem(product: product)
+                    : null,
+                child: const Icon(Icons.add),
+              ),
+            ],
           ),
-        ),
         const Gap.v(4),
         Text(
-          '${product.stock} items left',
+          '${product.stock - itemsInCart} items left',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const Gap.v(16),
