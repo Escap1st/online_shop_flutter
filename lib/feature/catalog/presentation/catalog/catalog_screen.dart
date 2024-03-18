@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../shared/presentation/widgets/screen_error_widget.dart';
+import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/product.dart';
 import 'providers/product_list/product_list_provider.dart';
@@ -17,7 +19,7 @@ class CatalogScreen extends ConsumerWidget {
     final productListState = ref.watch(productListProvider);
 
     final child = switch (productListState) {
-      ProductListLoading() => const Center(child: CircularProgressIndicator()),
+      ProductListLoading() => const ScreenLoadingWidget(),
       ProductListLoaded(:final response) => ListView.separated(
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
@@ -33,6 +35,10 @@ class CatalogScreen extends ConsumerWidget {
             );
           },
           separatorBuilder: (context, index) => const Gap.v(12),
+        ),
+      ProductListFailed(:final exception, :final stackTrace) => ScreenErrorWidget(
+          exception: exception,
+          stackTrace: stackTrace,
         ),
       _ => const SizedBox.shrink(),
     };
@@ -52,7 +58,7 @@ class CatalogScreen extends ConsumerWidget {
               alignment: Alignment.center,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () => const CartRoute().go(context),
                   icon: const Icon(Icons.shopping_cart),
                 ),
                 const Align(

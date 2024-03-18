@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/measure_size_widget.dart';
+import '../../../../shared/presentation/widgets/screen_error_widget.dart';
+import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/product.dart';
 import 'providers/product_details_provider.dart';
@@ -28,8 +30,10 @@ class ProductDetailsScreen extends StatelessWidget {
 
                   return switch (productState) {
                     AsyncData(:final value) => _Loaded(product: value),
-                    AsyncLoading() => const Center(
-                        child: CircularProgressIndicator(),
+                    AsyncLoading() => const ScreenLoadingWidget(),
+                    AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
+                        exception: error,
+                        stackTrace: stackTrace,
                       ),
                     _ => const SizedBox.shrink(),
                   };
@@ -144,7 +148,10 @@ class _Footer extends ConsumerWidget {
                 child: const Icon(Icons.remove),
               ),
               const Spacer(),
-              Text(itemsInCart.toString(), style: Theme.of(context).textTheme.bodyLarge,),
+              Text(
+                itemsInCart.toString(),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
               const Spacer(),
               ElevatedButton(
                 onPressed: itemsInCart < product.stock
