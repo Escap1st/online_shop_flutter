@@ -9,25 +9,25 @@ import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/product.dart';
-import 'providers/product_list/product_list_provider.dart';
+import 'providers/catalog/catalog_provider.dart';
 
 class CatalogScreen extends ConsumerWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productListState = ref.watch(productListProvider);
+    final catalogState = ref.watch(catalogProvider);
 
-    final child = switch (productListState) {
-      ProductListLoading() => const ScreenLoadingWidget(),
-      ProductListLoaded(:final response) => ListView.separated(
+    final child = switch (catalogState) {
+      CatalogLoading() => const ScreenLoadingWidget(),
+      CatalogLoaded(:final products) => ListView.separated(
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
             vertical: 16,
           ),
-          itemCount: response.items.length,
+          itemCount: products.length,
           itemBuilder: (context, index) {
-            final item = response.items[index];
+            final item = products[index];
             return _CatalogItemCard(
               key: ValueKey('product_card_${item.id}'),
               product: item,
@@ -36,11 +36,10 @@ class CatalogScreen extends ConsumerWidget {
           },
           separatorBuilder: (context, index) => const Gap.v(12),
         ),
-      ProductListFailed(:final exception, :final stackTrace) => ScreenErrorWidget(
+      CatalogFailed(:final exception, :final stackTrace) => ScreenErrorWidget(
           exception: exception,
           stackTrace: stackTrace,
         ),
-      _ => const SizedBox.shrink(),
     };
 
     return Scaffold(
@@ -48,7 +47,7 @@ class CatalogScreen extends ConsumerWidget {
         title: const Text('Catalog'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => const CatalogFilterRoute().go(context),
             icon: const Icon(Icons.filter_alt_rounded),
           ),
           SizedBox.square(

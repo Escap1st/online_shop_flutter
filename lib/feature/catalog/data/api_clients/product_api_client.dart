@@ -15,4 +15,7 @@ abstract class IProductApiClient {
 
   @GET('/{id}')
   Future<ProductModel> getProduct({@Path('id') required int productId});
+
+  @GET('/categories')
+  Future<List<String>> getCategories();
 }

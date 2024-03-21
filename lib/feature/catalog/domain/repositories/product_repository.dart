@@ -5,4 +5,6 @@ abstract interface class IProductRepository {
   Future<PagedResponse<Product>> getAllProducts();
 
   Future<Product> getProduct({required int productId});
+
+  Future<List<String>> getCategories();
 }

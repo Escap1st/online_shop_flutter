@@ -23,4 +23,9 @@ class ProductRepository implements IProductRepository {
     final productModel = await _productApiClient.getProduct(productId: productId);
     return const ProductMapper().toEntity(productModel);
   }
+
+  @override
+  Future<List<String>> getCategories() {
+    return _productApiClient.getCategories();
+  }
 }

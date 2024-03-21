@@ -6,6 +6,8 @@ abstract interface class ICatalogService {
   Future<PagedResponse<Product>> getAllProducts();
 
   Future<Product> getProduct({required int productId});
+
+  Future<List<String>> getCategories();
 }
 
 class CatalogService implements ICatalogService {
@@ -21,4 +23,7 @@ class CatalogService implements ICatalogService {
   @override
   Future<Product> getProduct({required int productId}) =>
       _productRepository.getProduct(productId: productId);
+
+  @override
+  Future<List<String>> getCategories() => _productRepository.getCategories();
 }

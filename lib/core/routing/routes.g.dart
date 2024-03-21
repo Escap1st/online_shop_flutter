@@ -19,6 +19,10 @@ RouteBase get $catalogRoute => GoRouteData.$route(
           factory: $ProductDetailsRouteExtension._fromState,
         ),
         GoRouteData.$route(
+          path: 'catalog_filter',
+          factory: $CatalogFilterRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
           path: 'cart',
           factory: $CartRouteExtension._fromState,
         ),
@@ -63,6 +67,24 @@ extension $ProductDetailsRouteExtension on ProductDetailsRoute {
 
   void replace(BuildContext context) =>
       context.replace(location, extra: $extra);
+}
+
+extension $CatalogFilterRouteExtension on CatalogFilterRoute {
+  static CatalogFilterRoute _fromState(GoRouterState state) =>
+      const CatalogFilterRoute();
+
+  String get location => GoRouteData.$location(
+        '/catalog_filter',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
 }
 
 extension $CartRouteExtension on CartRoute {

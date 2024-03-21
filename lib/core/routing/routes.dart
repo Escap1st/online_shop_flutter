@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../feature/cart/presentation/cart/cart_screen.dart';
 import '../../feature/catalog/domain/entities/product.dart';
 import '../../feature/catalog/presentation/catalog/catalog_screen.dart';
+import '../../feature/catalog/presentation/catalog_filter/catalog_filter_screen.dart';
 import '../../feature/catalog/presentation/product_details/product_details_screen.dart';
 
 part 'routes.g.dart';
@@ -13,6 +14,9 @@ part 'routes.g.dart';
   routes: [
     TypedGoRoute<ProductDetailsRoute>(
       path: 'product/:productId',
+    ),
+    TypedGoRoute<CatalogFilterRoute>(
+      path: 'catalog_filter',
     ),
     TypedGoRoute<CartRoute>(
       path: 'cart',
@@ -49,5 +53,14 @@ class CartRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const CartScreen();
+  }
+}
+
+class CatalogFilterRoute extends GoRouteData {
+  const CatalogFilterRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const CatalogFilterScreen();
   }
 }

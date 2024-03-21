@@ -5,12 +5,14 @@ import '../../../domain/catalog_service.dart';
 import '../../../domain/entities/product.dart';
 
 final productDetailsProvider =
-    AsyncNotifierProvider.autoDispose.family<ActivityNotifier, Product, int>(
-  () => ActivityNotifier(catalogService: resolveDependency()),
+    AsyncNotifierProvider.autoDispose.family<ProductDetailsNotifier, Product, int>(
+  () => ProductDetailsNotifier(catalogService: resolveDependency()),
 );
 
-class ActivityNotifier extends AutoDisposeFamilyAsyncNotifier<Product, int> {
-  ActivityNotifier({required ICatalogService catalogService}) : _catalogService = catalogService;
+class ProductDetailsNotifier extends AutoDisposeFamilyAsyncNotifier<Product, int> {
+  ProductDetailsNotifier({
+    required ICatalogService catalogService,
+  }) : _catalogService = catalogService;
 
   final ICatalogService _catalogService;
 

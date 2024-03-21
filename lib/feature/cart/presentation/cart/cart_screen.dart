@@ -44,7 +44,7 @@ class _Loaded extends StatelessWidget {
         ? _LoadedNonEmpty(cart: cart)
         : Center(
             child: Text(
-              'Cart is empty.\nPlease, go to catalog and add items to perform purchase',
+              'Cart is empty.\nPlease, go to the catalog and add items to perform purchase',
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
