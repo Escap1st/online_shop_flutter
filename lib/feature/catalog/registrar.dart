@@ -4,7 +4,11 @@ import 'data/api_clients/product_api_client.dart';
 import 'data/repositories/product_repository.dart';
 import 'domain/catalog_service.dart';
 import 'domain/repositories/product_repository.dart';
+import 'presentation/catalog/providers/catalog/catalog_provider.dart';
 import 'presentation/catalog/providers/product_list/product_list_provider.dart';
+import 'presentation/catalog_filter/providers/catalog_filter_provider/catalog_filter_provider.dart';
+import 'presentation/catalog_filter/providers/catalog_filters_data_provider/catalog_filters_data_provider.dart';
+import 'presentation/catalog_filter/providers/product_categories_provider.dart';
 
 class CatalogRegistrar implements IRegistrar {
   @override
@@ -20,6 +24,20 @@ class CatalogRegistrar implements IRegistrar {
     );
     registerFactoryDependency(
       () => ProductListNotifier(catalogService: resolveDependency()),
+    );
+    registerFactoryDependency(
+      () => ProductCategoriesNotifier(
+        catalogService: resolveDependency(),
+      ),
+    );
+    registerFactoryDependency(
+      () => CatalogFilterNotifier(),
+    );
+    registerFactoryDependency(
+      () => CatalogFiltersDataNotifier(),
+    );
+    registerFactoryDependency(
+      () => CatalogNotifier(),
     );
   }
 }

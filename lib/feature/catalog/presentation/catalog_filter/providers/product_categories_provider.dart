@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/di/dependencies.dart';
 import '../../../domain/catalog_service.dart';
 
-final productCategoriesProvider = AsyncNotifierProvider<ProductCategoriesNotifier, List<String>>(
-  () => ProductCategoriesNotifier(catalogService: resolveDependency()),
-);
+final productCategoriesProvider =
+    AsyncNotifierProvider<ProductCategoriesNotifier, List<String>>(resolveDependency);
 
 class ProductCategoriesNotifier extends AsyncNotifier<List<String>> {
   ProductCategoriesNotifier({

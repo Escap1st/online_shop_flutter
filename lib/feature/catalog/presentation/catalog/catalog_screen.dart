@@ -9,6 +9,7 @@ import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/product.dart';
+import '../catalog_filter/providers/catalog_filter_provider/catalog_filter_provider.dart';
 import 'providers/catalog/catalog_provider.dart';
 
 class CatalogScreen extends ConsumerWidget {
@@ -20,22 +21,7 @@ class CatalogScreen extends ConsumerWidget {
 
     final child = switch (catalogState) {
       CatalogLoading() => const ScreenLoadingWidget(),
-      CatalogLoaded(:final products) => ListView.separated(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 16,
-          ),
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            final item = products[index];
-            return _CatalogItemCard(
-              key: ValueKey('product_card_${item.id}'),
-              product: item,
-              onTap: () => ProductDetailsRoute(productId: item.id, $extra: item).go(context),
-            );
-          },
-          separatorBuilder: (context, index) => const Gap.v(12),
-        ),
+      CatalogLoaded(:final products) => _Loaded(products: products),
       CatalogFailed(:final exception, :final stackTrace) => ScreenErrorWidget(
           exception: exception,
           stackTrace: stackTrace,
@@ -46,30 +32,98 @@ class CatalogScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Catalog'),
         actions: [
-          IconButton(
+          _AppBarAction(
+            icon: Icons.filter_alt_rounded,
+            indicator: const _SelectedFiltersIndicator(),
             onPressed: () => const CatalogFilterRoute().go(context),
-            icon: const Icon(Icons.filter_alt_rounded),
           ),
-          SizedBox.square(
-            // TODO: shouldn't be 'magic' number
-            dimension: 56,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  onPressed: () => const CartRoute().go(context),
-                  icon: const Icon(Icons.shopping_cart),
-                ),
-                const Align(
-                  alignment: Alignment.topRight,
-                  child: _CartPositionsIndicator(),
-                ),
-              ],
-            ),
+          _AppBarAction(
+            icon: Icons.shopping_cart,
+            indicator: const _CartPositionsIndicator(),
+            onPressed: () => const CartRoute().go(context),
           ),
         ],
       ),
       body: SafeArea(child: child),
+    );
+  }
+}
+
+class _AppBarAction extends StatelessWidget {
+  const _AppBarAction({
+    required this.icon,
+    required this.indicator,
+    required this.onPressed,
+    super.key,
+  });
+
+  final IconData icon;
+  final Widget? indicator;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      // TODO: shouldn't be 'magic' number
+      dimension: 56,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          IconButton(
+            onPressed: onPressed,
+            icon: Icon(icon),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: indicator,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Loaded extends StatelessWidget {
+  const _Loaded({super.key, required this.products});
+
+  final List<Product> products;
+
+  @override
+  Widget build(BuildContext context) {
+    return products.isNotEmpty
+        ? _LoadedNonEmpty(products: products)
+        : Center(
+            child: Text(
+              'No items fitting your filters',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+          );
+  }
+}
+
+class _LoadedNonEmpty extends StatelessWidget {
+  const _LoadedNonEmpty({super.key, required this.products});
+
+  final List<Product> products;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 16,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final item = products[index];
+        return _CatalogItemCard(
+          key: ValueKey('product_card_${item.id}'),
+          product: item,
+          onTap: () => ProductDetailsRoute(productId: item.id, $extra: item).go(context),
+        );
+      },
+      separatorBuilder: (context, index) => const Gap.v(12),
     );
   }
 }
@@ -160,26 +214,46 @@ class _CartPositionsIndicator extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final positionsInCart = ref.watch(cartProvider).cart.items.length;
+    return positionsInCart > 0 ? _Indicator(value: positionsInCart) : const SizedBox.shrink();
+  }
+}
 
-    return positionsInCart > 0
-        ? Container(
-            margin: const EdgeInsets.all(4),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.error,
-              borderRadius: const BorderRadius.all(
-                Radius.circular(8),
-              ),
-            ),
-            height: 16,
-            width: 16,
-            child: Text(
-              positionsInCart.toString(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onError,
-                  ),
-            ),
-          )
-        : const SizedBox.shrink();
+class _SelectedFiltersIndicator extends ConsumerWidget {
+  const _SelectedFiltersIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedFilters = ref.watch(catalogFilterProvider).activeFilters;
+    return selectedFilters > 0 ? _Indicator(value: selectedFilters) : const SizedBox.shrink();
+  }
+}
+
+class _Indicator extends StatelessWidget {
+  const _Indicator({required this.value, super.key});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.all(4),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.error,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(8),
+        ),
+      ),
+      height: 16,
+      width: 16,
+      child: Text(
+        value.toString(),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onError,
+        ),
+      ),
+    );
   }
 }
