@@ -130,15 +130,13 @@ class _Footer extends ConsumerWidget {
     final itemsInCart = ref.watch(cartProvider).cart.items[product] ?? 0;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (itemsInCart == 0)
-          SizedBox(
-            width: double.maxFinite,
-            child: ElevatedButton(
-              onPressed: () => ref.read(cartProvider.notifier).addItem(product: product),
-              child: Text('Buy for ${product.price}\$'),
-            ),
+          ElevatedButton(
+            onPressed: () => ref.read(cartProvider.notifier).addItem(product: product),
+            child: Text('Buy for ${product.price}\$'),
           )
         else
           Row(
@@ -165,6 +163,7 @@ class _Footer extends ConsumerWidget {
         Text(
           '${product.stock - itemsInCart} items left',
           style: Theme.of(context).textTheme.bodySmall,
+          textAlign: TextAlign.center,
         ),
         const Gap.v(16),
       ],

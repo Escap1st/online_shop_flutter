@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../feature/authentication/presentation/sign_in/sign_in_screen.dart';
 import '../../feature/cart/presentation/cart/cart_screen.dart';
 import '../../feature/catalog/domain/entities/product.dart';
 import '../../feature/catalog/presentation/catalog/catalog_screen.dart';
 import '../../feature/catalog/presentation/catalog_filter/catalog_filter_screen.dart';
 import '../../feature/catalog/presentation/product_details/product_details_screen.dart';
+import '../../feature/order/presentation/order_confirmation/order_confirmation_screen.dart';
+import '../../feature/order/presentation/order_details/order_details_screen.dart';
 
 part 'routes.g.dart';
 
@@ -20,6 +25,19 @@ part 'routes.g.dart';
     ),
     TypedGoRoute<CartRoute>(
       path: 'cart',
+      routes: [
+        TypedGoRoute<SignInRoute>(
+          path: 'sign_in',
+        ),
+        TypedGoRoute<OrderDetailsRoute>(
+          path: 'order_details',
+          routes: [
+            TypedGoRoute<OrderConfirmationRoute>(
+              path: 'order_confirmation',
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 )
@@ -62,5 +80,32 @@ class CatalogFilterRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const CatalogFilterScreen();
+  }
+}
+
+class SignInRoute extends GoRouteData {
+  const SignInRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const SignInScreen();
+  }
+}
+
+class OrderConfirmationRoute extends GoRouteData {
+  const OrderConfirmationRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const OrderConfirmationScreen();
+  }
+}
+
+class OrderDetailsRoute extends GoRouteData {
+  const OrderDetailsRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const OrderDetailsScreen();
   }
 }

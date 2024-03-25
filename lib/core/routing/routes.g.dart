@@ -25,6 +25,22 @@ RouteBase get $catalogRoute => GoRouteData.$route(
         GoRouteData.$route(
           path: 'cart',
           factory: $CartRouteExtension._fromState,
+          routes: [
+            GoRouteData.$route(
+              path: 'sign_in',
+              factory: $SignInRouteExtension._fromState,
+            ),
+            GoRouteData.$route(
+              path: 'order_details',
+              factory: $OrderDetailsRouteExtension._fromState,
+              routes: [
+                GoRouteData.$route(
+                  path: 'order_confirmation',
+                  factory: $OrderConfirmationRouteExtension._fromState,
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );
@@ -92,6 +108,59 @@ extension $CartRouteExtension on CartRoute {
 
   String get location => GoRouteData.$location(
         '/cart',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $SignInRouteExtension on SignInRoute {
+  static SignInRoute _fromState(GoRouterState state) => const SignInRoute();
+
+  String get location => GoRouteData.$location(
+        '/cart/sign_in',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $OrderDetailsRouteExtension on OrderDetailsRoute {
+  static OrderDetailsRoute _fromState(GoRouterState state) =>
+      const OrderDetailsRoute();
+
+  String get location => GoRouteData.$location(
+        '/cart/order_details',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $OrderConfirmationRouteExtension on OrderConfirmationRoute {
+  static OrderConfirmationRoute _fromState(GoRouterState state) =>
+      const OrderConfirmationRoute();
+
+  String get location => GoRouteData.$location(
+        '/cart/order_details/order_confirmation',
       );
 
   void go(BuildContext context) => context.go(location);

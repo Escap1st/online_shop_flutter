@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/fading_edge_scroll_view.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
@@ -73,6 +74,7 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: FadingEdgeScrollView(
@@ -99,12 +101,9 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: SizedBox(
-            width: double.maxFinite,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Proceed'),
-            ),
+          child: ElevatedButton(
+            onPressed: () => const OrderDetailsRoute().go(context),
+            child: const Text('Place an order'),
           ),
         ),
       ],
