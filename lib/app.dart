@@ -31,4 +31,3 @@ class _RouterApp extends ConsumerWidget {
     );
   }
 }
-

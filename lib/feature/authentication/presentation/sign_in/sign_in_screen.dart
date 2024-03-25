@@ -5,11 +5,28 @@ import '../../../../core/auth_state.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 
-class SignInScreen extends ConsumerWidget {
+class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SignInScreen> createState() => _SignInState();
+}
+
+class _SignInState extends ConsumerState<SignInScreen> {
+  late final _loginKey = GlobalKey<FormFieldState<String>>();
+  late final _passwordKey = GlobalKey<FormFieldState<String>>();
+  late final _loginTextController = TextEditingController();
+  late final _passwordTextController = TextEditingController();
+
+  @override
+  void dispose() {
+    _loginTextController.dispose();
+    _passwordTextController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     const inputDecoration = InputDecoration(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(
@@ -30,18 +47,32 @@ class SignInScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                key: _loginKey,
+                controller: _loginTextController,
                 decoration: inputDecoration.copyWith(hintText: 'Login'),
                 textInputAction: TextInputAction.next,
+                validator: (value) => (value?.isEmpty ?? true) ? 'Should not be empty' : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: (_) => setState(() {}),
               ),
               const Gap.v(12),
               TextFormField(
+                key: _passwordKey,
+                controller: _passwordTextController,
                 decoration: inputDecoration.copyWith(hintText: 'Password'),
+                obscureText: true,
+                validator: (value) => (value?.isEmpty ?? true) ? 'Should not be empty' : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: (_) => setState(() {}),
               ),
               const Gap.v(12),
               ElevatedButton(
-                onPressed: () {
-                  const OrderDetailsRoute().go(context);
-                },
+                onPressed: _areFieldsValid()
+                    ? () {
+                        ref.read(authStateProvider.notifier).state = AuthState.email;
+                        const OrderDetailsRoute().go(context);
+                      }
+                    : null,
                 child: const Text('Confirm credentials'),
               ),
               const Gap.v(16),
@@ -76,5 +107,10 @@ class SignInScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  bool _areFieldsValid() {
+    return (_loginKey.currentState?.isValid ?? false) &&
+        (_passwordKey.currentState?.isValid ?? false);
   }
 }
