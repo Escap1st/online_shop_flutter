@@ -41,7 +41,7 @@ class _Loaded extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return cart.items.isNotEmpty
+    return cart.positions.isNotEmpty
         ? _LoadedNonEmpty(cart: cart)
         : Center(
             child: Text(
@@ -76,6 +76,18 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Column(
+          children: [
+            const Gap.v(16),
+            _TotalSection(title: 'Positions', value: widget.cart.positions.length.toString()),
+            const Gap.v(12),
+            _TotalSection(title: 'Items', value: widget.cart.items.toString()),
+            const Gap.v(12),
+            _TotalSection(title: 'Total sum', value: '${widget.cart.totalSum}\$'),
+            const Gap.v(12),
+            const Divider(indent: 8, endIndent: 8),
+          ],
+        ),
         Expanded(
           child: FadingEdgeScrollView(
             scrollController: _scrollController,
@@ -90,10 +102,10 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
                 horizontal: 8,
                 vertical: 16,
               ),
-              itemCount: widget.cart.items.length,
+              itemCount: widget.cart.positions.length,
               itemBuilder: (context, index) => _CartItemCard(
-                product: widget.cart.items.keys.elementAt(index),
-                count: widget.cart.items.values.elementAt(index),
+                product: widget.cart.positions.keys.elementAt(index),
+                count: widget.cart.positions.values.elementAt(index),
               ),
               separatorBuilder: (context, index) => const Gap.v(12),
             ),
@@ -106,6 +118,50 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
             child: const Text('Place an order'),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _TotalSection extends StatelessWidget {
+  const _TotalSection({super.key, required this.title, required this.value});
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.bodyLarge;
+
+    TextPainter painter(String text) => TextPainter(
+          text: TextSpan(text: text, style: style),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout();
+
+    final titlePainter = painter(title);
+    final valuePainter = painter(value);
+    final availableWidth =
+        MediaQuery.of(context).size.width - 16 * 2 - valuePainter.width - titlePainter.width;
+
+    var separatorPainter = painter(' ');
+
+    while (separatorPainter.width < availableWidth) {
+      separatorPainter = painter('${separatorPainter.plainText}. ');
+    }
+
+    return Row(
+      children: [
+        const Gap.h(16),
+        Text(title, textWidthBasis: TextWidthBasis.longestLine, style: style),
+        Expanded(
+            child: Text(
+          separatorPainter.plainText.trim(),
+          style: style,
+          textAlign: TextAlign.center,
+        )),
+        Text(value, style: style),
+        const Gap.h(16),
       ],
     );
   }

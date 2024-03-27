@@ -184,7 +184,7 @@ class _CatalogItemCard extends StatelessWidget {
                       children: [
                         if (product.price != originalPrice) ...[
                           Text(
-                            '${numberFormat.format(originalPrice)} \$',
+                            '${numberFormat.format(originalPrice)}\$',
                             style: TextStyle(
                               color: theme.colorScheme.error,
                               decoration: TextDecoration.lineThrough,
@@ -193,7 +193,7 @@ class _CatalogItemCard extends StatelessWidget {
                           const Gap.h(8),
                         ],
                         Text(
-                          '${numberFormat.format(product.price)} \$',
+                          '${numberFormat.format(product.price)}\$',
                         ),
                       ],
                     )
@@ -213,7 +213,7 @@ class _CartPositionsIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final positionsInCart = ref.watch(cartProvider).cart.items.length;
+    final positionsInCart = ref.watch(cartProvider).cart.positions.length;
     return positionsInCart > 0 ? _Indicator(value: positionsInCart) : const SizedBox.shrink();
   }
 }

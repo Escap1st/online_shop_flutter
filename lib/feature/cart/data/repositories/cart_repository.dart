@@ -5,7 +5,7 @@ import '../../domain/repositories/cart_repository.dart';
 class CartRepository implements ICartRepository {
   @override
   Future<Cart> getCart() async {
-    return const Cart(items: <Product, int>{});
+    return const Cart(positions: <Product, int>{});
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/measure_size_widget.dart';
@@ -19,7 +20,23 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        leading: ClipOval(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: context.pop,
+            ),
+          ),
+        ),
+      ),
+      extendBodyBehindAppBar: true,
       body: SafeArea(
+        top: false,
         child: product != null
             ? _Loaded(product: product!)
             : Consumer(
@@ -127,7 +144,7 @@ class _Footer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemsInCart = ref.watch(cartProvider).cart.items[product] ?? 0;
+    final itemsInCart = ref.watch(cartProvider).cart.positions[product] ?? 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -161,7 +178,9 @@ class _Footer extends ConsumerWidget {
           ),
         const Gap.v(4),
         Text(
-          '${product.stock - itemsInCart} items left',
+          itemsInCart > 0
+              ? '${product.price * itemsInCart}\$ • ${product.stock - itemsInCart} items left'
+              : '${product.stock - itemsInCart} items left',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

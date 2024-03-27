@@ -17,7 +17,7 @@ class CartNotifier extends StateNotifier<CartState> {
       : _cartService = cartService,
         super(
           const CartLoaded(
-            cart: Cart(items: {}),
+            cart: Cart(positions: {}),
           ),
         ) {
     load();
@@ -42,7 +42,7 @@ class CartNotifier extends StateNotifier<CartState> {
       await _cartService.addItem(product: product);
       state = CartLoaded(
         cart: Cart(
-          items: Map.of(state.cart.items)
+          positions: Map.of(state.cart.positions)
             ..update(
               product,
               (value) => value + 1,
@@ -62,7 +62,7 @@ class CartNotifier extends StateNotifier<CartState> {
   Future<void> removeItem({required Product product}) async {
     try {
       await _cartService.removeItem(product: product);
-      final newMap = Map.of(state.cart.items);
+      final newMap = Map.of(state.cart.positions);
       if ((newMap[product] ?? 0) > 1) {
         newMap.update(
           product,
@@ -73,7 +73,7 @@ class CartNotifier extends StateNotifier<CartState> {
       }
 
       state = CartLoaded(
-        cart: Cart(items: newMap),
+        cart: Cart(positions: newMap),
       );
     } catch (e, stackTrace) {
       state = CartFailed(
@@ -89,7 +89,7 @@ class CartNotifier extends StateNotifier<CartState> {
       await _cartService.removePosition(product: product);
       state = CartLoaded(
         cart: Cart(
-          items: Map.of(state.cart.items)..remove(product),
+          positions: Map.of(state.cart.positions)..remove(product),
         ),
       );
     } catch (e, stackTrace) {
@@ -105,7 +105,7 @@ class CartNotifier extends StateNotifier<CartState> {
     try {
       await _cartService.clearCart();
       state = const CartLoaded(
-        cart: Cart(items: {}),
+        cart: Cart(positions: {}),
       );
     } catch (e, stackTrace) {
       state = CartFailed(
