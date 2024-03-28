@@ -91,6 +91,11 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
         Expanded(
           child: FadingEdgeScrollView(
             scrollController: _scrollController,
+            startEdge: StartFadingEdge(
+              color: Theme.of(context).colorScheme.background,
+              size: 32,
+              offset: 0.3,
+            ),
             endEdge: EndFadingEdge(
               color: Theme.of(context).colorScheme.background,
               size: 32,
@@ -141,8 +146,11 @@ class _TotalSection extends StatelessWidget {
 
     final titlePainter = painter(title);
     final valuePainter = painter(value);
-    final availableWidth =
-        MediaQuery.of(context).size.width - 16 * 2 - valuePainter.width - titlePainter.width;
+    final availableWidth = MediaQuery.of(context).size.width -
+        16 * 2 -
+        8 * 2 -
+        valuePainter.width -
+        titlePainter.width;
 
     var separatorPainter = painter(' ');
 
@@ -154,12 +162,15 @@ class _TotalSection extends StatelessWidget {
       children: [
         const Gap.h(16),
         Text(title, textWidthBasis: TextWidthBasis.longestLine, style: style),
+        const Gap.h(8),
         Expanded(
-            child: Text(
-          separatorPainter.plainText.trim(),
-          style: style,
-          textAlign: TextAlign.center,
-        )),
+          child: Text(
+            separatorPainter.plainText.trim(),
+            style: style,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const Gap.h(8),
         Text(value, style: style),
         const Gap.h(16),
       ],

@@ -18,6 +18,9 @@ class _SignInState extends ConsumerState<SignInScreen> {
   late final _loginTextController = TextEditingController();
   late final _passwordTextController = TextEditingController();
 
+  var _isLoginValid = false;
+  var _isPasswordValid = false;
+
   @override
   void dispose() {
     _loginTextController.dispose();
@@ -49,21 +52,29 @@ class _SignInState extends ConsumerState<SignInScreen> {
               TextFormField(
                 key: _loginKey,
                 controller: _loginTextController,
-                decoration: inputDecoration.copyWith(hintText: 'Login'),
+                decoration: inputDecoration.copyWith(labelText: 'Login'),
                 textInputAction: TextInputAction.next,
-                validator: (value) => (value?.isEmpty ?? true) ? 'Should not be empty' : null,
+                validator: _nonEmptyValidator,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                onChanged: (_) => setState(() {}),
+                onChanged: (_) {
+                  if (_loginKey.currentState?.isValid != _isLoginValid) {
+                    setState(() => _isLoginValid ^= true);
+                  }
+                },
               ),
               const Gap.v(12),
               TextFormField(
                 key: _passwordKey,
                 controller: _passwordTextController,
-                decoration: inputDecoration.copyWith(hintText: 'Password'),
+                decoration: inputDecoration.copyWith(labelText: 'Password'),
                 obscureText: true,
-                validator: (value) => (value?.isEmpty ?? true) ? 'Should not be empty' : null,
+                validator: _nonEmptyValidator,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                onChanged: (_) => setState(() {}),
+                onChanged: (_) {
+                  if (_passwordKey.currentState?.isValid != _isPasswordValid) {
+                    setState(() => _isPasswordValid ^= true);
+                  }
+                },
               ),
               const Gap.v(12),
               ElevatedButton(
@@ -109,8 +120,10 @@ class _SignInState extends ConsumerState<SignInScreen> {
     );
   }
 
+  String? _nonEmptyValidator(String? value) =>
+      (value?.isEmpty ?? true) ? 'Should not be empty' : null;
+
   bool _areFieldsValid() {
-    return (_loginKey.currentState?.isValid ?? false) &&
-        (_passwordKey.currentState?.isValid ?? false);
+    return _isPasswordValid && _isLoginValid;
   }
 }

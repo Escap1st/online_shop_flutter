@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../order_details/providers/order_details_provider.dart';
 
-class OrderConfirmationScreen extends StatelessWidget {
+class OrderConfirmationScreen extends ConsumerWidget {
   const OrderConfirmationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderDetailsState = ref.read(orderDetailsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order confirmation'),
@@ -16,8 +20,12 @@ class OrderConfirmationScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Expanded(
-              child: Placeholder(),
+             Expanded(
+              child: ListView(
+                children: [
+                  Text(orderDetailsState!.name),
+                ]
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
