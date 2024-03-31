@@ -12,7 +12,20 @@
           "package_name": "com.example.online_shop_flutter"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "593604658570-v9dhf0km9vr72hll01seru6i64uul2l3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.online_shop_flutter",
+            "certificate_hash": "f121b8d8952c5dc6ba3a554e873545df2eb91a59"
+          }
+        },
+        {
+          "client_id": "593604658570-lcf1eu84u0rkgftcdvvmpp0kc5p98s66.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCh-8b9UCc4nZ7kq8LJkj_w58gWMxdXaPQ"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593604658570-lcf1eu84u0rkgftcdvvmpp0kc5p98s66.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
