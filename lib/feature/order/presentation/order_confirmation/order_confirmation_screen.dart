@@ -81,10 +81,17 @@ class _Summary extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _SummaryItem(
-              title: 'Recipient name',
-              text: '${orderDetailsState!.name} ${orderDetailsState.surname}'),
-          _SummaryItem(title: 'Delivery address', text: orderDetailsState.address),
-          _SummaryItem(title: 'Sum to pay', text: '${cartState.cart.totalSum}\$'),
+            title: 'Recipient name',
+            text: '${orderDetailsState!.name} ${orderDetailsState.surname}',
+          ),
+          _SummaryItem(
+            title: 'Delivery address',
+            text: orderDetailsState.address,
+          ),
+          _SummaryItem(
+            title: 'Sum to pay',
+            text: '${cartState.cart.totalSum}\$',
+          ),
         ].separate(const Gap.v(8)).toList(),
       ),
     );
