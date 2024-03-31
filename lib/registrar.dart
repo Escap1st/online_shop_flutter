@@ -4,6 +4,7 @@ import 'package:talker_dio_logger/talker_dio_logger.dart';
 import 'core/di/dependencies.dart';
 import 'core/di/registrar.dart';
 import 'core/log.dart';
+import 'feature/authentication/registrar.dart';
 import 'feature/cart/registrar.dart';
 import 'feature/catalog/registrar.dart';
 
@@ -24,6 +25,7 @@ class AppRegistrar implements IRegistrar {
     );
 
     final featuresRegistrars = [
+      AuthenticationRegistrar(),
       CatalogRegistrar(),
       CartRegistrar(),
     ];

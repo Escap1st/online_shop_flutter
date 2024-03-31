@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/auth_state.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import 'providers/sign_in_email_provider.dart';
+import 'providers/sign_in_google_provider.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -13,9 +15,10 @@ class SignInScreen extends ConsumerStatefulWidget {
 }
 
 class _SignInState extends ConsumerState<SignInScreen> {
-  late final _loginKey = GlobalKey<FormFieldState<String>>();
+  late final _scaffoldKey = GlobalKey();
+  late final _emailKey = GlobalKey<FormFieldState<String>>();
   late final _passwordKey = GlobalKey<FormFieldState<String>>();
-  late final _loginTextController = TextEditingController();
+  late final _emailTextController = TextEditingController();
   late final _passwordTextController = TextEditingController();
 
   var _isLoginValid = false;
@@ -23,13 +26,17 @@ class _SignInState extends ConsumerState<SignInScreen> {
 
   @override
   void dispose() {
-    _loginTextController.dispose();
+    _emailTextController.dispose();
     _passwordTextController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _setListeners(ref);
+
+    final signInEmailState = ref.watch(signInEmailProvider);
+
     const inputDecoration = InputDecoration(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(
@@ -39,6 +46,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
     );
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Sign in'),
       ),
@@ -50,14 +58,15 @@ class _SignInState extends ConsumerState<SignInScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                key: _loginKey,
-                controller: _loginTextController,
-                decoration: inputDecoration.copyWith(labelText: 'Login'),
+                key: _emailKey,
+                controller: _emailTextController,
+                enabled: !signInEmailState.isLoading,
+                decoration: inputDecoration.copyWith(labelText: 'Email'),
                 textInputAction: TextInputAction.next,
-                validator: _nonEmptyValidator,
+                validator: _emailValidator,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: (_) {
-                  if (_loginKey.currentState?.isValid != _isLoginValid) {
+                  if (_emailKey.currentState?.isValid != _isLoginValid) {
                     setState(() => _isLoginValid ^= true);
                   }
                 },
@@ -65,6 +74,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
               const Gap.v(12),
               TextFormField(
                 key: _passwordKey,
+                enabled: !signInEmailState.isLoading,
                 controller: _passwordTextController,
                 decoration: inputDecoration.copyWith(labelText: 'Password'),
                 obscureText: true,
@@ -78,13 +88,20 @@ class _SignInState extends ConsumerState<SignInScreen> {
               ),
               const Gap.v(12),
               ElevatedButton(
-                onPressed: _areFieldsValid()
-                    ? () {
-                        ref.read(authStateProvider.notifier).state = AuthState.email;
-                        const OrderDetailsRoute().go(context);
-                      }
+                onPressed: !signInEmailState.isLoading && _areFieldsValid()
+                    ? () => ref.read(signInEmailProvider.notifier).signIn(
+                          email: _emailTextController.text,
+                          password: _passwordTextController.text,
+                        )
                     : null,
-                child: const Text('Confirm credentials'),
+                child: signInEmailState.isLoading
+                    ? const SizedBox.square(
+                        dimension: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text('Confirm credentials'),
               ),
               const Gap.v(16),
               const Divider(),
@@ -101,10 +118,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
                     borderRadius: const BorderRadius.all(
                       Radius.circular(24),
                     ),
-                    onTap: () {
-                      ref.read(authStateProvider.notifier).state = AuthState.google;
-                      const OrderDetailsRoute().go(context);
-                    },
+                    onTap: ref.read(signInGoogleProvider.notifier).signIn,
                     child: Image.asset(
                       'assets/images/google.png',
                       width: 48,
@@ -118,6 +132,43 @@ class _SignInState extends ConsumerState<SignInScreen> {
         ),
       ),
     );
+  }
+
+  void _setListeners(WidgetRef ref) {
+    ref.listen(
+      signInEmailProvider,
+      (previous, next) {
+        switch (next) {
+          case AsyncData(:final value) when value == true:
+            ref.read(authStateProvider.notifier).state = AuthState.email;
+            const OrderDetailsRoute().go(context);
+          case AsyncError(:final error):
+            final snackBar = SnackBar(content: Text(error.toString()));
+            ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(snackBar);
+        }
+      },
+    );
+
+    ref.listen(
+      signInGoogleProvider,
+      (previous, next) {
+        switch (next) {
+          case AsyncData(:final value) when value == true:
+            ref.read(authStateProvider.notifier).state = AuthState.google;
+            const OrderDetailsRoute().go(context);
+          case AsyncError(:final error):
+            final snackBar = SnackBar(content: Text(error.toString()));
+            ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(snackBar);
+        }
+      },
+    );
+  }
+
+  String? _emailValidator(String? value) {
+    return RegExp(r"^[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(value ?? '')
+        ? null
+        : 'Wrong email format';
   }
 
   String? _nonEmptyValidator(String? value) =>
