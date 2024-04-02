@@ -14,13 +14,13 @@ Currently implemented features:
 - Order (closed by auth)
 
 # TODO
-- [] Catalog pagination
-- [] Error handling
-- [] Save local state in db
-- [] Save remote state (in fb probably)
-- [] Ratings and reviews
-- [] Favorites
-- [] Use hooks (in separate branch probably)
-- [] i18n
-- [] Some simple icon
-- [] Unit tests
+- [ ] Catalog pagination
+- [ ] Error handling
+- [ ] Save local state in db
+- [ ] Save remote state (in fb probably)
+- [ ] Ratings and reviews
+- [ ] Favorites
+- [ ] Use hooks (in separate branch probably)
+- [ ] i18n
+- [ ] Some simple icon
+- [ ] Unit tests
