@@ -14,8 +14,8 @@ void logWarning(String label, String message) {
   talker.warning(_beatifyMessage(label, message));
 }
 
-void logError(String label, Object error, {StackTrace? stackTrace}) {
-  talker.error(label, error, stackTrace);
+void logError(String label, Object error, {StackTrace? st}) {
+  talker.error(label, error, st);
 }
 
 void logCustom(String label, String message) {

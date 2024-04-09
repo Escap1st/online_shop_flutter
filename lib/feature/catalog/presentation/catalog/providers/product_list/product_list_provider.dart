@@ -27,8 +27,8 @@ class ProductListNotifier extends StateNotifier<ProductListState> {
     try {
       final response = await _catalogService.getAllProducts();
       state = ProductListLoaded(response: response);
-    } catch (e, stackTrace) {
-      state = ProductListFailed(exception: e, stackTrace: stackTrace);
+    } catch (e, st) {
+      state = ProductListFailed(exception: e, stackTrace: st);
     }
   }
 }

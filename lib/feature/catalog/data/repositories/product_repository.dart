@@ -1,3 +1,6 @@
+import 'dart:core';
+
+import '../../../../core/network/network_call_error_handling.dart';
 import '../../../../shared/domain/entities/paged_response.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -14,18 +17,18 @@ class ProductRepository implements IProductRepository {
 
   @override
   Future<PagedResponse<Product>> getAllProducts() async {
-    final pagedResponseModel = await _productApiClient.getProductsList();
+    final pagedResponseModel = await _productApiClient.getProductsList().handleErrors();
     return const ProductsPagedResponseMapper().toEntity(pagedResponseModel);
   }
 
   @override
   Future<Product> getProduct({required int productId}) async {
-    final productModel = await _productApiClient.getProduct(productId: productId);
+    final productModel = await _productApiClient.getProduct(productId: productId).handleErrors();
     return const ProductMapper().toEntity(productModel);
   }
 
   @override
   Future<List<String>> getCategories() {
-    return _productApiClient.getCategories();
+    return _productApiClient.getCategories().handleErrors();
   }
 }

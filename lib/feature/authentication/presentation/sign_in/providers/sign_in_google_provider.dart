@@ -22,8 +22,8 @@ class SignInGoogleNotifier extends StateNotifier<AsyncValue<bool>> {
     try {
       await _authenticationService.signInGoogle();
       state = const AsyncData(true);
-    } catch (e, stackTrace) {
-      state = AsyncError(e, stackTrace);
+    } catch (e, st) {
+      state = AsyncError(e, st);
     }
   }
 }

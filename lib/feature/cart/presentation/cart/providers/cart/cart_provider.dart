@@ -28,11 +28,11 @@ class CartNotifier extends StateNotifier<CartState> {
   Future<void> load() async {
     try {
       state = CartLoaded(cart: await _cartService.getCart());
-    } catch (e, stackTrace) {
+    } catch (e, st){
       state = CartFailed(
         cart: state.cart,
         exception: e,
-        stackTrace: stackTrace,
+        stackTrace: st,
       );
     }
   }
@@ -50,11 +50,11 @@ class CartNotifier extends StateNotifier<CartState> {
             ),
         ),
       );
-    } catch (e, stackTrace) {
+    } catch (e, st) {
       state = CartFailed(
         cart: state.cart,
         exception: e,
-        stackTrace: stackTrace,
+        stackTrace: st,
       );
     }
   }
@@ -75,11 +75,11 @@ class CartNotifier extends StateNotifier<CartState> {
       state = CartLoaded(
         cart: Cart(positions: newMap),
       );
-    } catch (e, stackTrace) {
+    } catch (e, st) {
       state = CartFailed(
         cart: state.cart,
         exception: e,
-        stackTrace: stackTrace,
+        stackTrace: st,
       );
     }
   }
@@ -92,11 +92,11 @@ class CartNotifier extends StateNotifier<CartState> {
           positions: Map.of(state.cart.positions)..remove(product),
         ),
       );
-    } catch (e, stackTrace) {
+    } catch (e, st) {
       state = CartFailed(
         cart: state.cart,
         exception: e,
-        stackTrace: stackTrace,
+        stackTrace: st,
       );
     }
   }
@@ -107,11 +107,11 @@ class CartNotifier extends StateNotifier<CartState> {
       state = const CartLoaded(
         cart: Cart(positions: {}),
       );
-    } catch (e, stackTrace) {
+    } catch (e, st) {
       state = CartFailed(
         cart: state.cart,
         exception: e,
-        stackTrace: stackTrace,
+        stackTrace: st,
       );
     }
   }

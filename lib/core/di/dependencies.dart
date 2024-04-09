@@ -5,8 +5,8 @@ import '../log.dart';
 T resolveDependency<T extends Object>({String? instanceName}) {
   try {
     return GetIt.instance<T>(instanceName: instanceName);
-  } catch (e, stackTrace) {
-    logError('failed resolving dependency', e, stackTrace: stackTrace);
+  } catch (e, st) {
+    logError('failed resolving dependency', e, st: st);
     rethrow;
   }
 }
