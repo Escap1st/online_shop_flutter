@@ -29,11 +29,16 @@ class CatalogLoaded extends CatalogState {
 }
 
 class CatalogFailed extends CatalogState {
-  const CatalogFailed({required this.exception, required this.stackTrace});
+  const CatalogFailed({
+    required this.exception,
+    required this.stackTrace,
+    this.isReloading = false,
+  });
 
   final Object exception;
   final StackTrace stackTrace;
+  final bool isReloading;
 
   @override
-  List<Object?> get props => [exception, stackTrace];
+  List<Object?> get props => [exception, stackTrace, isReloading];
 }

@@ -26,7 +26,7 @@ class CartScreen extends ConsumerWidget {
         CartLoading() => const ScreenLoadingWidget(),
         CartLoaded(:final cart) => _Loaded(cart: cart),
         CartFailed(:final exception, :final stackTrace)=> ScreenErrorWidget(
-            exception: exception,
+            error: exception,
             stackTrace: stackTrace,
           ),
       },

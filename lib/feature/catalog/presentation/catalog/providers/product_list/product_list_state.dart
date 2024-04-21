@@ -33,11 +33,28 @@ class ProductListLoaded extends ProductListState {
 }
 
 class ProductListFailed extends ProductListState {
-  const ProductListFailed({required this.exception, required this.stackTrace});
+  const ProductListFailed({
+    required this.exception,
+    required this.stackTrace,
+    this.isReloading = false,
+  });
 
   final Object exception;
   final StackTrace stackTrace;
+  final bool isReloading;
 
   @override
-  List<Object?> get props => [exception, stackTrace];
+  List<Object?> get props => [exception, stackTrace, isReloading];
+
+  ProductListFailed copyWith({
+    Object? exception,
+    StackTrace? stackTrace,
+    bool? isReloading,
+  }) {
+    return ProductListFailed(
+      exception: exception ?? this.exception,
+      stackTrace: stackTrace ?? this.stackTrace,
+      isReloading: isReloading ?? this.isReloading,
+    );
+  }
 }

@@ -31,4 +31,17 @@ class ProductListNotifier extends StateNotifier<ProductListState> {
       state = ProductListFailed(exception: e, stackTrace: st);
     }
   }
+
+  Future<void> reload() async {
+    state = state is ProductListFailed
+        ? (state as ProductListFailed).copyWith(isReloading: true)
+        : const ProductListLoading();
+
+    try {
+      final response = await _catalogService.getAllProducts();
+      state = ProductListLoaded(response: response);
+    } catch (e, st) {
+      state = ProductListFailed(exception: e, stackTrace: st);
+    }
+  }
 }

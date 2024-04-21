@@ -37,25 +37,28 @@ class ProductDetailsScreen extends StatelessWidget {
       extendBodyBehindAppBar: true,
       body: SafeArea(
         top: false,
-        child: product != null
+        child: /*product != null
             ? _Loaded(product: product!)
-            : Consumer(
-                builder: (context, ref, child) {
-                  final productState = ref.watch(
-                    productDetailsProvider(productId),
-                  );
+            : */
+            Consumer(
+          builder: (context, ref, child) {
+            final productState = ref.watch(
+              productDetailsProvider(productId),
+            );
 
-                  return switch (productState) {
-                    AsyncData(:final value) => _Loaded(product: value),
-                    AsyncLoading() => const ScreenLoadingWidget(),
-                    AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
-                        exception: error,
-                        stackTrace: stackTrace,
-                      ),
-                    _ => const SizedBox.shrink(),
-                  };
-                },
-              ),
+            return switch (productState) {
+              AsyncData(:final value) => _Loaded(product: value),
+              AsyncLoading() => const ScreenLoadingWidget(),
+              AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
+                  error: error,
+                  stackTrace: stackTrace,
+                  onRetry: () => ref.invalidate(productDetailsProvider(productId)),
+                  isRetrying: productState.isRefreshing,
+                ),
+              _ => const SizedBox.shrink(),
+            };
+          },
+        ),
       ),
     );
   }

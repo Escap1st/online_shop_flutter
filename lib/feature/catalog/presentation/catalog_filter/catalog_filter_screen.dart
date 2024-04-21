@@ -8,11 +8,24 @@ import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import 'providers/catalog_filter_provider/catalog_filter_provider.dart';
 import 'providers/catalog_filters_data_provider/catalog_filters_data_provider.dart';
 
-class CatalogFilterScreen extends ConsumerWidget {
+class CatalogFilterScreen extends ConsumerStatefulWidget {
   const CatalogFilterScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CatalogFilterScreen> createState() => _CatalogFilterScreenState();
+}
+
+class _CatalogFilterScreenState extends ConsumerState<CatalogFilterScreen> {
+  @override
+  void initState() {
+    if (ref.read(catalogFiltersDataProvider).hasError) {
+      ref.read(catalogFiltersDataProvider.notifier).invalidate();
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final catalogFiltersDataState = ref.watch(catalogFiltersDataProvider);
 
     return Scaffold(
@@ -24,8 +37,10 @@ class CatalogFilterScreen extends ConsumerWidget {
           AsyncData(:final value) => _Loaded(catalogFiltersDataState: value),
           AsyncLoading() => const ScreenLoadingWidget(),
           AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
-              exception: error,
+              error: error,
               stackTrace: stackTrace,
+              onRetry: () => ref.read(catalogFiltersDataProvider.notifier).invalidate(),
+              isRetrying: catalogFiltersDataState.isRefreshing,
             ),
           _ => const SizedBox.shrink(),
         },

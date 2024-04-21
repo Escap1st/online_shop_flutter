@@ -4,6 +4,7 @@ import 'package:talker_dio_logger/talker_dio_logger.dart';
 
 import 'di/dependencies.dart';
 import 'di/registrar.dart';
+import 'error_handler.dart';
 import 'log.dart';
 import 'network/connectivity_interceptor.dart';
 
@@ -27,5 +28,7 @@ class CoreRegistrar implements IRegistrar {
           ],
         ),
     );
+
+    registerLazySingletonDependency<IErrorHandler>(() => ErrorHandler());
   }
 }

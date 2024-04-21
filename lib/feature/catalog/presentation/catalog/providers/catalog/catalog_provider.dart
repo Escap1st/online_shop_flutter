@@ -21,9 +21,10 @@ class CatalogNotifier extends Notifier<CatalogState> {
       ProductListLoaded(:final response) => CatalogLoaded(
           products: _filterItems(response.items, catalogFilterState),
         ),
-      ProductListFailed(:final exception, :final stackTrace) => CatalogFailed(
+      ProductListFailed(:final exception, :final stackTrace, :final isReloading) => CatalogFailed(
           exception: exception,
           stackTrace: stackTrace,
+          isReloading: isReloading,
         ),
     };
   }
@@ -32,5 +33,9 @@ class CatalogNotifier extends Notifier<CatalogState> {
     return filterState.selectedCategories.isEmpty
         ? items
         : items.where((e) => filterState.selectedCategories.contains(e.category)).toList();
+  }
+
+  void reload() {
+    ref.read(productListProvider.notifier).reload();
   }
 }

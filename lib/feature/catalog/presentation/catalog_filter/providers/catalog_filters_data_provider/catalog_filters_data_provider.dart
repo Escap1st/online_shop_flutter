@@ -8,7 +8,8 @@ part 'catalog_filters_data_state.dart';
 
 final catalogFiltersDataProvider =
     NotifierProvider<CatalogFiltersDataNotifier, AsyncValue<CatalogFiltersDataState>>(
-        resolveDependency);
+  resolveDependency,
+);
 
 class CatalogFiltersDataNotifier extends Notifier<AsyncValue<CatalogFiltersDataState>> {
   @override
@@ -18,7 +19,10 @@ class CatalogFiltersDataNotifier extends Notifier<AsyncValue<CatalogFiltersDataS
 
     if (states.any((e) => e is AsyncError)) {
       final first = states.firstWhere((e) => e is AsyncError).asError!;
-      return AsyncValue.error(first.error, first.stackTrace);
+      final newError = AsyncValue<CatalogFiltersDataState>.error(first.error, first.stackTrace);
+      return first.isRefreshing
+          ? const AsyncLoading<CatalogFiltersDataState>().copyWithPrevious(newError)
+          : newError;
     } else if (states.any((e) => e is AsyncLoading)) {
       return const AsyncLoading();
     } else {
@@ -26,5 +30,9 @@ class CatalogFiltersDataNotifier extends Notifier<AsyncValue<CatalogFiltersDataS
         CatalogFiltersDataState(categories: productCategories.value!),
       );
     }
+  }
+
+  void invalidate() {
+    ref.invalidate(productCategoriesProvider);
   }
 }

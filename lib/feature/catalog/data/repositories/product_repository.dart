@@ -28,7 +28,7 @@ class ProductRepository implements IProductRepository {
   }
 
   @override
-  Future<List<String>> getCategories() {
+  Future<List<String>> getCategories() async {
     return _productApiClient.getCategories().handleErrors();
   }
 }

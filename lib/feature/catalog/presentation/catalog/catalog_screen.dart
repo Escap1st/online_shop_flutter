@@ -22,9 +22,11 @@ class CatalogScreen extends ConsumerWidget {
     final child = switch (catalogState) {
       CatalogLoading() => const ScreenLoadingWidget(),
       CatalogLoaded(:final products) => _Loaded(products: products),
-      CatalogFailed(:final exception, :final stackTrace) => ScreenErrorWidget(
-          exception: exception,
+      CatalogFailed(:final exception, :final stackTrace, :final isReloading) => ScreenErrorWidget(
+          error: exception,
           stackTrace: stackTrace,
+          isRetrying: isReloading,
+          onRetry: ref.read(catalogProvider.notifier).reload,
         ),
     };
 

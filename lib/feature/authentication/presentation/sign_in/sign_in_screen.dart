@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/auth_state.dart';
+import '../../../../core/di/dependencies.dart';
+import '../../../../core/error_handler.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import 'providers/sign_in_email_provider.dart';
@@ -15,7 +17,6 @@ class SignInScreen extends ConsumerStatefulWidget {
 }
 
 class _SignInState extends ConsumerState<SignInScreen> {
-  late final _scaffoldKey = GlobalKey();
   late final _emailKey = GlobalKey<FormFieldState<String>>();
   late final _passwordKey = GlobalKey<FormFieldState<String>>();
   late final _emailTextController = TextEditingController();
@@ -46,7 +47,6 @@ class _SignInState extends ConsumerState<SignInScreen> {
     );
 
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Sign in'),
       ),
@@ -142,9 +142,12 @@ class _SignInState extends ConsumerState<SignInScreen> {
           case AsyncData(:final value) when value == true:
             ref.read(authStateProvider.notifier).state = AuthState.email;
             const OrderDetailsRoute().go(context);
-          case AsyncError(:final error):
-            final snackBar = SnackBar(content: Text(error.toString()));
-            ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(snackBar);
+          case AsyncError(:final error, :final stackTrace):
+            resolveDependency<IErrorHandler>().showNotification(
+              context,
+              error: error,
+              stackTrace: stackTrace,
+            );
         }
       },
     );
@@ -156,9 +159,12 @@ class _SignInState extends ConsumerState<SignInScreen> {
           case AsyncData(:final value) when value == true:
             ref.read(authStateProvider.notifier).state = AuthState.google;
             const OrderDetailsRoute().go(context);
-          case AsyncError(:final error):
-            final snackBar = SnackBar(content: Text(error.toString()));
-            ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(snackBar);
+          case AsyncError(:final error, :final stackTrace):
+            resolveDependency<IErrorHandler>().showNotification(
+              context,
+              error: error,
+              stackTrace: stackTrace,
+            );
         }
       },
     );
