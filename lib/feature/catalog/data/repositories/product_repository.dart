@@ -16,8 +16,13 @@ class ProductRepository implements IProductRepository {
   final IProductApiClient _productApiClient;
 
   @override
-  Future<PagedResponse<Product>> getAllProducts() async {
-    final pagedResponseModel = await _productApiClient.getProductsList().handleErrors();
+  Future<PagedResponse<Product>> getProducts({required int offset, required int limit}) async {
+    final pagedResponseModel = await _productApiClient
+        .getProductsList(
+          offset: offset,
+          limit: limit,
+        )
+        .handleErrors();
     return const ProductsPagedResponseMapper().toEntity(pagedResponseModel);
   }
 

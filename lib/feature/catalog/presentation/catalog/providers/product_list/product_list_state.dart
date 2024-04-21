@@ -16,20 +16,13 @@ class ProductListLoading extends ProductListState {
 }
 
 class ProductListLoaded extends ProductListState {
-  const ProductListLoaded({required this.response});
+  const ProductListLoaded({required this.products, required this.isPaginationAvailable});
 
-  final PagedResponse<Product> response;
+  final List<Product> products;
+  final bool isPaginationAvailable;
 
   @override
-  List<Object?> get props => [response];
-
-  ProductListLoaded copyWith({
-    PagedResponse<Product>? response,
-  }) {
-    return ProductListLoaded(
-      response: response ?? this.response,
-    );
-  }
+  List<Object?> get props => [products, isPaginationAvailable];
 }
 
 class ProductListFailed extends ProductListState {
@@ -57,4 +50,28 @@ class ProductListFailed extends ProductListState {
       isReloading: isReloading ?? this.isReloading,
     );
   }
+}
+
+class ProductListPaginating extends ProductListState {
+  const ProductListPaginating({required this.products});
+
+  final List<Product> products;
+
+  @override
+  List<Object?> get props => [products];
+}
+
+class ProductListPaginationFailed extends ProductListState {
+  const ProductListPaginationFailed({
+    required this.products,
+    required this.exception,
+    required this.stackTrace,
+  });
+
+  final List<Product> products;
+  final Object exception;
+  final StackTrace stackTrace;
+
+  @override
+  List<Object?> get props => [products, exception, stackTrace];
 }

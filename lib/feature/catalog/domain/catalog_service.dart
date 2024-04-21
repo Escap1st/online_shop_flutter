@@ -3,7 +3,7 @@ import 'entities/product.dart';
 import 'repositories/product_repository.dart';
 
 abstract interface class ICatalogService {
-  Future<PagedResponse<Product>> getAllProducts();
+  Future<PagedResponse<Product>> getProducts({required int offset, required int limit});
 
   Future<Product> getProduct({required int productId});
 
@@ -18,7 +18,8 @@ class CatalogService implements ICatalogService {
   final IProductRepository _productRepository;
 
   @override
-  Future<PagedResponse<Product>> getAllProducts() => _productRepository.getAllProducts();
+  Future<PagedResponse<Product>> getProducts({required int offset, required int limit}) =>
+      _productRepository.getProducts(offset: offset, limit: limit);
 
   @override
   Future<Product> getProduct({required int productId}) =>

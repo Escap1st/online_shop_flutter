@@ -12,20 +12,13 @@ class CatalogLoading extends CatalogState {
 }
 
 class CatalogLoaded extends CatalogState {
-  const CatalogLoaded({required this.products});
+  const CatalogLoaded({required this.products, required this.isPaginationAvailable});
 
   final List<Product> products;
+  final bool isPaginationAvailable;
 
   @override
-  List<Object?> get props => [products];
-
-  CatalogLoaded copyWith({
-    List<Product>? products,
-  }) {
-    return CatalogLoaded(
-      products: products ?? this.products,
-    );
-  }
+  List<Object?> get props => [products, isPaginationAvailable];
 }
 
 class CatalogFailed extends CatalogState {
@@ -41,4 +34,28 @@ class CatalogFailed extends CatalogState {
 
   @override
   List<Object?> get props => [exception, stackTrace, isReloading];
+}
+
+class CatalogPaginating extends CatalogState {
+  const CatalogPaginating({required this.products});
+
+  final List<Product> products;
+
+  @override
+  List<Object?> get props => [products];
+}
+
+class CatalogPaginationFailed extends CatalogState {
+  const CatalogPaginationFailed({
+    required this.products,
+    required this.exception,
+    required this.stackTrace,
+  });
+
+  final List<Product> products;
+  final Object exception;
+  final StackTrace stackTrace;
+
+  @override
+  List<Object?> get props => [products, exception, stackTrace];
 }

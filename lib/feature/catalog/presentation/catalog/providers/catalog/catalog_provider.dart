@@ -18,13 +18,21 @@ class CatalogNotifier extends Notifier<CatalogState> {
 
     return switch (productListState) {
       ProductListInitial() || ProductListLoading() => const CatalogLoading(),
-      ProductListLoaded(:final response) => CatalogLoaded(
-          products: _filterItems(response.items, catalogFilterState),
+      ProductListLoaded(:final products, :final isPaginationAvailable) => CatalogLoaded(
+          products: _filterItems(products, catalogFilterState),
+          isPaginationAvailable: isPaginationAvailable,
         ),
       ProductListFailed(:final exception, :final stackTrace, :final isReloading) => CatalogFailed(
           exception: exception,
           stackTrace: stackTrace,
           isReloading: isReloading,
+        ),
+      ProductListPaginating(:final products) => CatalogPaginating(products: products),
+      ProductListPaginationFailed(:final products, :final exception, :final stackTrace) =>
+        CatalogPaginationFailed(
+          products: products,
+          exception: exception,
+          stackTrace: stackTrace,
         ),
     };
   }
@@ -37,5 +45,9 @@ class CatalogNotifier extends Notifier<CatalogState> {
 
   void reload() {
     ref.read(productListProvider.notifier).reload();
+  }
+
+  void getNextPage() {
+    ref.read(productListProvider.notifier).getNextPage();
   }
 }

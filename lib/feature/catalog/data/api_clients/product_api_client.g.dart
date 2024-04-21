@@ -21,9 +21,15 @@ class _IProductApiClient implements IProductApiClient {
   String? baseUrl;
 
   @override
-  Future<ProductsPagedResponseModel> getProductsList() async {
+  Future<ProductsPagedResponseModel> getProductsList({
+    required int offset,
+    required int limit,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'skip': offset,
+      r'limit': limit,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(

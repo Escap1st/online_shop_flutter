@@ -11,7 +11,10 @@ abstract class IProductApiClient {
   factory IProductApiClient(Dio dio, {String baseUrl}) = _IProductApiClient;
 
   @GET('')
-  Future<ProductsPagedResponseModel> getProductsList();
+  Future<ProductsPagedResponseModel> getProductsList({
+    @Query('skip') required int offset,
+    @Query('limit') required int limit,
+  });
 
   @GET('/{id}')
   Future<ProductModel> getProduct({@Path('id') required int productId});

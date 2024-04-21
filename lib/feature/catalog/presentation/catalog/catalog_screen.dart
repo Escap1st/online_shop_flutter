@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/di/dependencies.dart';
+import '../../../../core/error_handler.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
@@ -19,14 +21,30 @@ class CatalogScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final catalogState = ref.watch(catalogProvider);
 
+    _handlePaginationFailed(context, catalogState);
+
     final child = switch (catalogState) {
       CatalogLoading() => const ScreenLoadingWidget(),
-      CatalogLoaded(:final products) => _Loaded(products: products),
+      CatalogLoaded(:final products, :final isPaginationAvailable) => _Loaded(
+          products: products,
+          isPaginating: false,
+          isPaginationAvailable: isPaginationAvailable,
+        ),
       CatalogFailed(:final exception, :final stackTrace, :final isReloading) => ScreenErrorWidget(
           error: exception,
           stackTrace: stackTrace,
           isRetrying: isReloading,
           onRetry: ref.read(catalogProvider.notifier).reload,
+        ),
+      CatalogPaginating(:final products) => _Loaded(
+          products: products,
+          isPaginating: true,
+          isPaginationAvailable: false,
+        ),
+      CatalogPaginationFailed(:final products) => _Loaded(
+          products: products,
+          isPaginating: false,
+          isPaginationAvailable: true,
         ),
     };
 
@@ -48,6 +66,16 @@ class CatalogScreen extends ConsumerWidget {
       ),
       body: SafeArea(child: child),
     );
+  }
+
+  void _handlePaginationFailed(BuildContext context, CatalogState state) {
+    if (state is CatalogPaginationFailed) {
+      resolveDependency<ErrorHandler>().showNotification(
+        context,
+        error: state.exception,
+        stackTrace: state.stackTrace,
+      );
+    }
   }
 }
 
@@ -86,14 +114,25 @@ class _AppBarAction extends StatelessWidget {
 }
 
 class _Loaded extends StatelessWidget {
-  const _Loaded({super.key, required this.products});
+  const _Loaded({
+    super.key,
+    required this.products,
+    required this.isPaginating,
+    required this.isPaginationAvailable,
+  });
 
   final List<Product> products;
+  final bool isPaginating;
+  final bool isPaginationAvailable;
 
   @override
   Widget build(BuildContext context) {
     return products.isNotEmpty
-        ? _LoadedNonEmpty(products: products)
+        ? _LoadedNonEmpty(
+            products: products,
+            isPaginating: isPaginating,
+            isPaginationAvailable: isPaginationAvailable,
+          )
         : Center(
             child: Text(
               'No items fitting your filters',
@@ -104,26 +143,79 @@ class _Loaded extends StatelessWidget {
   }
 }
 
-class _LoadedNonEmpty extends StatelessWidget {
-  const _LoadedNonEmpty({super.key, required this.products});
+class _LoadedNonEmpty extends ConsumerStatefulWidget {
+  const _LoadedNonEmpty({
+    super.key,
+    required this.products,
+    required this.isPaginating,
+    required this.isPaginationAvailable,
+  });
 
   final List<Product> products;
+  final bool isPaginating;
+  final bool isPaginationAvailable;
+
+  @override
+  ConsumerState<_LoadedNonEmpty> createState() => _LoadedNonEmptyState();
+}
+
+class _LoadedNonEmptyState extends ConsumerState<_LoadedNonEmpty> {
+  late final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    _scrollController.addListener(() {
+      if (!widget.isPaginationAvailable) {
+        return;
+      }
+
+      final maxScrollExtent = _scrollController.position.maxScrollExtent;
+      if (maxScrollExtent != 0 && maxScrollExtent == _scrollController.position.pixels) {
+        ref.read(catalogProvider.notifier).getNextPage();
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.linear,
+        );
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      controller: _scrollController,
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
         vertical: 16,
       ),
-      itemCount: products.length,
+      itemCount: widget.isPaginating ? widget.products.length + 1 : widget.products.length,
       itemBuilder: (context, index) {
-        final item = products[index];
-        return _CatalogItemCard(
-          key: ValueKey('product_card_${item.id}'),
-          product: item,
-          onTap: () => ProductDetailsRoute(productId: item.id, $extra: item).go(context),
-        );
+        if (index == widget.products.length) {
+          return const Center(
+            child: SizedBox.square(
+              dimension: 32,
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else {
+          final item = widget.products[index];
+          return _CatalogItemCard(
+            key: ValueKey('product_card_${item.id}'),
+            product: item,
+            onTap: () => ProductDetailsRoute(productId: item.id, $extra: item).go(context),
+          );
+        }
       },
       separatorBuilder: (context, index) => const Gap.v(12),
     );
