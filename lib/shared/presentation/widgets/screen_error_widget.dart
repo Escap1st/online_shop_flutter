@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/error_details_screen.dart';
 import 'gap.dart';
+import 'kit_button.dart';
 
 class ScreenErrorWidget extends StatelessWidget {
   const ScreenErrorWidget({
@@ -35,16 +36,10 @@ class ScreenErrorWidget extends StatelessWidget {
               const Gap.v(16),
               FractionallySizedBox(
                 widthFactor: 0.33,
-                child: ElevatedButton(
+                child: KitButton(
+                  label: 'Retry',
+                  isLoading: isRetrying,
                   onPressed: onRetry,
-                  child: isRetrying
-                      ? const SizedBox.square(
-                          dimension: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text('Retry'),
                 ),
               ),
             ],
@@ -52,7 +47,8 @@ class ScreenErrorWidget extends StatelessWidget {
               const Gap.v(8),
               FractionallySizedBox(
                 widthFactor: 0.33,
-                child: ElevatedButton(
+                child: KitButton(
+                  label: 'Details',
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ErrorDetailsScreen(
@@ -61,7 +57,6 @@ class ScreenErrorWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: const Text('Details'),
                 ),
               ),
             ]

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/fading_edge_scroll_view.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../shared/presentation/widgets/kit_button.dart';
+import '../../domain/entities/order_details.dart';
 import 'providers/order_details_provider.dart';
 
 class OrderDetailsScreen extends ConsumerStatefulWidget {
@@ -138,10 +140,11 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: ElevatedButton(
+              child: KitButton(
+                label: 'Continue',
                 onPressed: _areFieldsValid()
                     ? () {
-                        ref.read(orderDetailsProvider.notifier).state = OrderDetailsState(
+                        ref.read(orderDetailsProvider.notifier).state = OrderDetails(
                           name: _nameTextController.text,
                           surname: _surnameTextController.text,
                           address: _addressTextController.text,
@@ -149,7 +152,6 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
                         const OrderConfirmationRoute().go(context);
                       }
                     : null,
-                child: const Text('Continue'),
               ),
             ),
           ],

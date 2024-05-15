@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/di/dependencies.dart';
-import '../../../domain/authentication_service.dart';
-import '../../../domain/entities/sign_in_email_params.dart';
+import '../../../../../../core/di/dependencies.dart';
+import '../../../../domain/authentication_service.dart';
+import '../../../../domain/entities/sign_in_email_params.dart';
 
 final signInEmailProvider =
     StateNotifierProvider.autoDispose<SignInEmailNotifier, AsyncValue<bool>>(

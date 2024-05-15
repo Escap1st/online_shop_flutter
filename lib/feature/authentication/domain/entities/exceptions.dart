@@ -9,3 +9,5 @@ class FirebaseAuthUserNotFoundException implements AppException {}
 class FirebaseAuthInvalidCredentialException implements AppException {}
 
 class FirebaseAuthFailedException implements AppException {}
+
+class UnauthenticatedUserException implements AppException {}

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/auth_state.dart';
-import '../../../../core/di/dependencies.dart';
-import '../../../../core/error_handler.dart';
-import '../../../../core/routing/routes.dart';
-import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../../core/auth_state.dart';
+import '../../../../../core/di/dependencies.dart';
+import '../../../../../core/error_handler.dart';
+import '../../../../../core/routing/routes.dart';
+import '../../../../../shared/presentation/widgets/gap.dart';
+import '../../../../../shared/presentation/widgets/kit_button.dart';
 import 'providers/sign_in_email_provider.dart';
 import 'providers/sign_in_google_provider.dart';
 
@@ -87,21 +88,15 @@ class _SignInState extends ConsumerState<SignInScreen> {
                 },
               ),
               const Gap.v(12),
-              ElevatedButton(
-                onPressed: !signInEmailState.isLoading && _areFieldsValid()
+              KitButton(
+                label: 'Confirm credentials',
+                isLoading: signInEmailState.isLoading,
+                onPressed: _areFieldsValid()
                     ? () => ref.read(signInEmailProvider.notifier).signIn(
                           email: _emailTextController.text,
                           password: _passwordTextController.text,
                         )
                     : null,
-                child: signInEmailState.isLoading
-                    ? const SizedBox.square(
-                        dimension: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('Confirm credentials'),
               ),
               const Gap.v(16),
               const Divider(),

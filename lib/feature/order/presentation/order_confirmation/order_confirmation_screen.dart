@@ -2,19 +2,66 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/di/dependencies.dart';
+import '../../../../core/error_handler.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/utils/iterable.dart';
 import '../../../../shared/presentation/widgets/fading_edge_scroll_view.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../shared/presentation/widgets/kit_button.dart';
 import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../../catalog/domain/entities/product.dart';
+import '../../domain/entities/order.dart';
+import '../../domain/entities/order_entry.dart';
 import '../order_details/providers/order_details_provider.dart';
+import 'providers/order_confirmation_provider.dart';
 
 class OrderConfirmationScreen extends ConsumerWidget {
   const OrderConfirmationScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final cart = ref.read(cartProvider).cart;
+    final orderDetails = ref.read(orderDetailsProvider);
+    final order = Order(
+      entries: cart.positions.entries
+          .map(
+            (e) => OrderEntry(
+              productId: e.key.id,
+              price: e.key.price,
+              count: e.value,
+            ),
+          )
+          .toList(),
+      details: orderDetails!,
+    );
+
+    final confirmationProvider = orderConfirmationProvider(order);
+    final confirmationState = ref.watch(confirmationProvider);
+    ref.listen(
+      confirmationProvider,
+      (previous, next) {
+        if (next is AsyncData && next.requireValue) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => _Dialog(
+              onConfirm: () {
+                const CatalogRoute().go(context);
+                ref.invalidate(cartProvider);
+              },
+            ),
+          );
+        } else if (next is AsyncError) {
+          resolveDependency<IErrorHandler>().showNotification(
+            context,
+            error: next.error!,
+            stackTrace: next.stackTrace,
+          );
+        }
+      },
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order confirmation'),
@@ -44,20 +91,10 @@ class OrderConfirmationScreen extends ConsumerWidget {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => _Dialog(
-                      onConfirm: () {
-                        const CatalogRoute().go(context);
-                        ref.invalidate(cartProvider);
-                      },
-                    ),
-                  );
-                },
-                child: const Text('Confirm'),
+              child: KitButton(
+                label: 'Confirm',
+                isLoading: confirmationState is AsyncLoading,
+                onPressed: ref.read(confirmationProvider.notifier).confirm,
               ),
             ),
           ],
@@ -112,7 +149,10 @@ class _SummaryItem extends StatelessWidget {
       text: TextSpan(
         style: textTheme.bodyLarge,
         children: [
-          TextSpan(text: '$title: ', style: const TextStyle(fontWeight: FontWeight.w600)),
+          TextSpan(
+            text: '$title: ',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
           TextSpan(text: text),
         ],
       ),
@@ -285,9 +325,9 @@ class _Dialog extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const Gap.v(12),
-              ElevatedButton(
+              KitButton(
+                label: 'Continue shopping',
                 onPressed: onConfirm,
-                child: const Text('Continue shopping'),
               )
             ],
           ),

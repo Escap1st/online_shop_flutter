@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../feature/authentication/presentation/sign_in/sign_in_screen.dart';
+import '../../feature/authentication/presentation/screens/sign_in/sign_in_screen.dart';
 import '../../feature/cart/presentation/cart/cart_screen.dart';
 import '../../feature/catalog/domain/entities/product.dart';
 import '../../feature/catalog/presentation/catalog/catalog_screen.dart';

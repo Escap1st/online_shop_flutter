@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/fading_edge_scroll_view.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../shared/presentation/widgets/kit_button.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../catalog/domain/entities/product.dart';
@@ -25,7 +26,7 @@ class CartScreen extends ConsumerWidget {
       body: switch (cartState) {
         CartLoading() => const ScreenLoadingWidget(),
         CartLoaded(:final cart) => _Loaded(cart: cart),
-        CartFailed(:final exception, :final stackTrace)=> ScreenErrorWidget(
+        CartFailed(:final exception, :final stackTrace) => ScreenErrorWidget(
             error: exception,
             stackTrace: stackTrace,
           ),
@@ -118,9 +119,9 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: ElevatedButton(
+          child: KitButton(
+            label: 'Place an order',
             onPressed: () => const OrderDetailsRoute().go(context),
-            child: const Text('Place an order'),
           ),
         ),
       ],

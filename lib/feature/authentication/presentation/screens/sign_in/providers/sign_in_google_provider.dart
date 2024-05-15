@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/di/dependencies.dart';
-import '../../../domain/authentication_service.dart';
+import '../../../../../../core/di/dependencies.dart';
+import '../../../../domain/authentication_service.dart';
 
 final signInGoogleProvider =
     StateNotifierProvider.autoDispose<SignInGoogleNotifier, AsyncValue<bool>>(

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/auth_state.dart';
 import '../../../../core/exceptions/app_exception.dart';
 import '../../../../core/exceptions/common_exceptions.dart';
 import '../../domain/entities/exceptions.dart';
@@ -8,10 +9,40 @@ import '../../domain/entities/sign_in_email_params.dart';
 import '../../domain/repositories/authentication_repository.dart';
 
 class AuthenticationRepository implements IAuthenticationRepository {
+  AuthenticationRepository({
+    required FirebaseAuth firebaseAuth,
+    required GoogleSignIn googleSignIn,
+  })  : _firebaseAuth = firebaseAuth,
+        _googleSignIn = googleSignIn;
+
+  final FirebaseAuth _firebaseAuth;
+  final GoogleSignIn _googleSignIn;
+
+  @override
+  Future<bool> isAuthenticated() async {
+    return _firebaseAuth.currentUser != null || _googleSignIn.currentUser != null;
+  }
+
+  @override
+  Future<AuthState> getAuthenticationState() async {
+    if (_firebaseAuth.currentUser != null) {
+      return AuthState.email;
+    } else if (_googleSignIn.currentUser != null) {
+      return AuthState.google;
+    } else {
+      return AuthState.none;
+    }
+  }
+
+  @override
+  Future<String?> getUserId() async {
+    return _firebaseAuth.currentUser?.uid ?? _googleSignIn.currentUser?.id;
+  }
+
   @override
   Future<void> signInEmail({required SignInEmailParams params}) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
         email: params.email,
         password: params.password,
       );
@@ -38,9 +69,7 @@ class AuthenticationRepository implements IAuthenticationRepository {
     GoogleSignInAccount? account;
 
     try {
-      final scopes = ['email'];
-      final googleSignIn = GoogleSignIn(scopes: scopes);
-      account = await googleSignIn.signIn();
+      account = await _googleSignIn.signIn();
     } catch (e, st) {
       Error.throwWithStackTrace(UnknownException(), st);
     }

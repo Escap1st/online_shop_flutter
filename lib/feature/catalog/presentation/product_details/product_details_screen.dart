@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../shared/presentation/widgets/kit_button.dart';
 import '../../../../shared/presentation/widgets/measure_size_widget.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
@@ -37,28 +38,27 @@ class ProductDetailsScreen extends StatelessWidget {
       extendBodyBehindAppBar: true,
       body: SafeArea(
         top: false,
-        child: /*product != null
+        child: product != null
             ? _Loaded(product: product!)
-            : */
-            Consumer(
-          builder: (context, ref, child) {
-            final productState = ref.watch(
-              productDetailsProvider(productId),
-            );
+            : Consumer(
+                builder: (context, ref, child) {
+                  final productState = ref.watch(
+                    productDetailsProvider(productId),
+                  );
 
-            return switch (productState) {
-              AsyncData(:final value) => _Loaded(product: value),
-              AsyncLoading() => const ScreenLoadingWidget(),
-              AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
-                  error: error,
-                  stackTrace: stackTrace,
-                  onRetry: () => ref.invalidate(productDetailsProvider(productId)),
-                  isRetrying: productState.isRefreshing,
-                ),
-              _ => const SizedBox.shrink(),
-            };
-          },
-        ),
+                  return switch (productState) {
+                    AsyncData(:final value) => _Loaded(product: value),
+                    AsyncLoading() => const ScreenLoadingWidget(),
+                    AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
+                        error: error,
+                        stackTrace: stackTrace,
+                        onRetry: () => ref.invalidate(productDetailsProvider(productId)),
+                        isRetrying: productState.isRefreshing,
+                      ),
+                    _ => const SizedBox.shrink(),
+                  };
+                },
+              ),
       ),
     );
   }
@@ -154,9 +154,9 @@ class _Footer extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (itemsInCart == 0)
-          ElevatedButton(
+          KitButton(
+            label: 'Buy for ${product.price}\$',
             onPressed: () => ref.read(cartProvider.notifier).addItem(product: product),
-            child: Text('Buy for ${product.price}\$'),
           )
         else
           Row(
