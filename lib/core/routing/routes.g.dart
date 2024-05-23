@@ -7,49 +7,51 @@ part of 'routes.dart';
 // **************************************************************************
 
 List<RouteBase> get $appRoutes => [
-      $catalogRoute,
+      $mainRoute,
+      $cartRoute,
     ];
 
-RouteBase get $catalogRoute => GoRouteData.$route(
-      path: '/',
-      factory: $CatalogRouteExtension._fromState,
-      routes: [
-        GoRouteData.$route(
-          path: 'product/:productId',
-          factory: $ProductDetailsRouteExtension._fromState,
-        ),
-        GoRouteData.$route(
-          path: 'catalog_filter',
-          factory: $CatalogFilterRouteExtension._fromState,
-        ),
-        GoRouteData.$route(
-          path: 'cart',
-          factory: $CartRouteExtension._fromState,
+RouteBase get $mainRoute => StatefulShellRouteData.$route(
+      factory: $MainRouteExtension._fromState,
+      branches: [
+        StatefulShellBranchData.$branch(
           routes: [
             GoRouteData.$route(
-              path: 'sign_in',
-              factory: $SignInRouteExtension._fromState,
-            ),
-            GoRouteData.$route(
-              path: 'order_details',
-              factory: $OrderDetailsRouteExtension._fromState,
+              path: '/catalog',
+              factory: $CatalogRouteExtension._fromState,
               routes: [
                 GoRouteData.$route(
-                  path: 'order_confirmation',
-                  factory: $OrderConfirmationRouteExtension._fromState,
+                  path: 'product/:productId',
+                  factory: $ProductDetailsRouteExtension._fromState,
+                ),
+                GoRouteData.$route(
+                  path: 'catalog_filter',
+                  factory: $CatalogFilterRouteExtension._fromState,
                 ),
               ],
+            ),
+          ],
+        ),
+        StatefulShellBranchData.$branch(
+          routes: [
+            GoRouteData.$route(
+              path: '/profile',
+              factory: $ProfileRouteExtension._fromState,
             ),
           ],
         ),
       ],
     );
 
+extension $MainRouteExtension on MainRoute {
+  static MainRoute _fromState(GoRouterState state) => const MainRoute();
+}
+
 extension $CatalogRouteExtension on CatalogRoute {
   static CatalogRoute _fromState(GoRouterState state) => const CatalogRoute();
 
   String get location => GoRouteData.$location(
-        '/',
+        '/catalog',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -70,7 +72,7 @@ extension $ProductDetailsRouteExtension on ProductDetailsRoute {
       );
 
   String get location => GoRouteData.$location(
-        '/product/${Uri.encodeComponent(productId.toString())}',
+        '/catalog/product/${Uri.encodeComponent(productId.toString())}',
       );
 
   void go(BuildContext context) => context.go(location, extra: $extra);
@@ -90,7 +92,7 @@ extension $CatalogFilterRouteExtension on CatalogFilterRoute {
       const CatalogFilterRoute();
 
   String get location => GoRouteData.$location(
-        '/catalog_filter',
+        '/catalog/catalog_filter',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -102,6 +104,44 @@ extension $CatalogFilterRouteExtension on CatalogFilterRoute {
 
   void replace(BuildContext context) => context.replace(location);
 }
+
+extension $ProfileRouteExtension on ProfileRoute {
+  static ProfileRoute _fromState(GoRouterState state) => const ProfileRoute();
+
+  String get location => GoRouteData.$location(
+        '/profile',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $cartRoute => GoRouteData.$route(
+      path: '/cart',
+      factory: $CartRouteExtension._fromState,
+      routes: [
+        GoRouteData.$route(
+          path: 'sign_in',
+          factory: $SignInRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
+          path: 'order_details',
+          factory: $OrderDetailsRouteExtension._fromState,
+          routes: [
+            GoRouteData.$route(
+              path: 'order_confirmation',
+              factory: $OrderConfirmationRouteExtension._fromState,
+            ),
+          ],
+        ),
+      ],
+    );
 
 extension $CartRouteExtension on CartRoute {
   static CartRoute _fromState(GoRouterState state) => const CartRoute();

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -60,7 +61,7 @@ class CatalogScreen extends ConsumerWidget {
           _AppBarAction(
             icon: Icons.shopping_cart,
             indicator: const _CartPositionsIndicator(),
-            onPressed: () => const CartRoute().go(context),
+            onPressed: () => const CartRoute().push(context),
           ),
         ],
       ),
@@ -169,18 +170,20 @@ class _LoadedNonEmptyState extends ConsumerState<_LoadedNonEmpty> {
         return;
       }
 
-      final maxScrollExtent = _scrollController.position.maxScrollExtent;
-      if (maxScrollExtent != 0 && maxScrollExtent == _scrollController.position.pixels) {
-        ref.read(catalogProvider.notifier).getNextPage();
-      }
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        final maxScrollExtent = _scrollController.position.maxScrollExtent;
+        if (maxScrollExtent != 0 && maxScrollExtent == _scrollController.position.pixels) {
+          ref.read(catalogProvider.notifier).getNextPage();
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.linear,
-        );
-      });
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.linear,
+            );
+          });
+        }
+      }
     });
     super.initState();
   }

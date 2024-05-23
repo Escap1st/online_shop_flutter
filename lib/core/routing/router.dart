@@ -28,6 +28,7 @@ final routerProvider = Provider<GoRouter>(
         TalkerRouteObserver(talker),
       ],
       routes: $appRoutes,
+      initialLocation: '/catalog',
       redirect: (context, state) async {
         final restrictedLocations = [
           const OrderDetailsRoute().location,
