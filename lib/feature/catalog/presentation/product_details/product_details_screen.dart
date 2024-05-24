@@ -107,16 +107,20 @@ class _LoadedState extends State<_Loaded> {
                     widget.product.title,
                     style: textTheme.headlineMedium,
                   ),
-                  const Gap.v(4),
-                  Text(
-                    'Brand: ${widget.product.brand}',
-                    style: textTheme.bodySmall,
-                  ),
-                  const Gap.v(4),
-                  Text(
-                    'Category: ${widget.product.category}',
-                    style: textTheme.bodySmall,
-                  ),
+                  if (widget.product.brand != null) ...[
+                    const Gap.v(4),
+                    Text(
+                      'Brand: ${widget.product.brand}',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
+                  if (widget.product.category.name.isNotEmpty) ...[
+                    const Gap.v(4),
+                    Text(
+                      'Category: ${widget.product.category.name}',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
                   const Gap.v(16),
                   const Gap.v(16),
                   Text(widget.product.description),

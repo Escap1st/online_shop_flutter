@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../../../core/utils/typedefs.dart';
-import 'order_details_model.dart';
+import 'order_delivery_details_model.dart';
 import 'order_entry_model.dart';
 
 part 'order_model.g.dart';
@@ -18,7 +18,7 @@ class OrderModel {
   factory OrderModel.fromJson(Json json) => _$OrderModelFromJson(json);
 
   final List<OrderEntryModel> entries;
-  final OrderDetailsModel details;
+  final OrderDeliveryDetailsModel details;
   final String dateTime;
   final String userId;
 

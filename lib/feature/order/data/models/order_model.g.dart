@@ -10,8 +10,8 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
       entries: (json['entries'] as List<dynamic>)
           .map((e) => OrderEntryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      details:
-          OrderDetailsModel.fromJson(json['details'] as Map<String, dynamic>),
+      details: OrderDeliveryDetailsModel.fromJson(
+          json['details'] as Map<String, dynamic>),
       dateTime: json['dateTime'] as String,
       userId: json['userId'] as String,
     );

@@ -11,9 +11,6 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
         selectedIndex: navigationShell.currentIndex,
         destinations: const [
           NavigationDestination(

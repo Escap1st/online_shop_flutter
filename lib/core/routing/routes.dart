@@ -9,8 +9,8 @@ import '../../feature/catalog/domain/entities/product.dart';
 import '../../feature/catalog/presentation/catalog/catalog_screen.dart';
 import '../../feature/catalog/presentation/catalog_filter/catalog_filter_screen.dart';
 import '../../feature/catalog/presentation/product_details/product_details_screen.dart';
+import '../../feature/order/presentation/delivery_details/delivery_details_screen.dart';
 import '../../feature/order/presentation/order_confirmation/order_confirmation_screen.dart';
-import '../../feature/order/presentation/order_details/order_details_screen.dart';
 import '../../feature/profile/presentation/profile/profile_screen.dart';
 import '../../shared/presentation/screens/main_screen.dart';
 
@@ -94,7 +94,7 @@ class ProductDetailsRoute extends GoRouteData {
     TypedGoRoute<SignInRoute>(
       path: 'sign_in',
     ),
-    TypedGoRoute<OrderDetailsRoute>(
+    TypedGoRoute<DeliveryDetailsRoute>(
       path: 'order_details',
       routes: [
         TypedGoRoute<OrderConfirmationRoute>(
@@ -140,11 +140,11 @@ class OrderConfirmationRoute extends GoRouteData {
   }
 }
 
-class OrderDetailsRoute extends GoRouteData {
-  const OrderDetailsRoute();
+class DeliveryDetailsRoute extends GoRouteData {
+  const DeliveryDetailsRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const OrderDetailsScreen();
+    return const DeliveryDetailsScreen();
   }
 }

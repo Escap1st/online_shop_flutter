@@ -17,4 +17,10 @@ class OrderRepository implements IOrderRepository {
     final model = const OrderMapper().fromEntity(order);
     await _firestore.collection(Constants.ordersCollection).add(model.toJson());
   }
+
+  Future<void> cancelOrder() async {}
+
+  Future<List<Order>> getOrders() async {
+    return [];
+  }
 }

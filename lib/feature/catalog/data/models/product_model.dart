@@ -29,7 +29,7 @@ class ProductModel {
   final double discountPercentage;
   final double rating;
   final int stock;
-  final String brand;
+  final String? brand;
   final String category;
   final String thumbnail;
   final List<String> images;

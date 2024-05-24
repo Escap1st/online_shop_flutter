@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../models/product_category_model.dart';
 import '../models/product_model.dart';
 import '../models/products_paged_response_model.dart';
 
@@ -20,5 +21,5 @@ abstract class IProductApiClient {
   Future<ProductModel> getProduct({@Path('id') required int productId});
 
   @GET('/categories')
-  Future<List<String>> getCategories();
+  Future<List<ProductCategoryModel>> getCategories();
 }

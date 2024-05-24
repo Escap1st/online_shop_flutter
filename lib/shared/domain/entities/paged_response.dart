@@ -15,4 +15,18 @@ class PagedResponse<T> extends Equatable {
 
   @override
   List<Object?> get props => [items, total, skip, limit];
+
+  PagedResponse<T> copyWith({
+    List<T>? items,
+    int? total,
+    int? skip,
+    int? limit,
+  }) {
+    return PagedResponse(
+      items: items ?? this.items,
+      total: total ?? this.total,
+      skip: skip ?? this.skip,
+      limit: limit ?? this.limit,
+    );
+  }
 }

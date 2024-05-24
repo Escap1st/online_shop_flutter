@@ -121,7 +121,7 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: KitButton(
             label: 'Place an order',
-            onPressed: () => const OrderDetailsRoute().go(context),
+            onPressed: () => const DeliveryDetailsRoute().go(context),
           ),
         ),
       ],

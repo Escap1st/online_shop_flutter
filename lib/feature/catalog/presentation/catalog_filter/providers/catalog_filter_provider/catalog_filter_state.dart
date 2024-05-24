@@ -3,7 +3,7 @@ part of 'catalog_filter_provider.dart';
 class CatalogFilterState extends Equatable {
   const CatalogFilterState({this.selectedCategories = const []});
 
-  final List<String> selectedCategories;
+  final List<ProductCategory> selectedCategories;
 
   int get activeFilters => [
         selectedCategories.isNotEmpty,
@@ -13,7 +13,7 @@ class CatalogFilterState extends Equatable {
   List<Object?> get props => [selectedCategories];
 
   CatalogFilterState copyWith({
-    List<String>? selectedCategories,
+    List<ProductCategory>? selectedCategories,
   }) {
     return CatalogFilterState(
       selectedCategories: selectedCategories ?? this.selectedCategories,

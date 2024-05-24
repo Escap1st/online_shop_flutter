@@ -1,7 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-class OrderDetails extends Equatable {
-  const OrderDetails({required this.name, required this.surname, required this.address});
+class OrderDeliveryDetails extends Equatable {
+  const OrderDeliveryDetails({
+    required this.name,
+    required this.surname,
+    required this.address,
+  });
 
   final String name;
   final String surname;

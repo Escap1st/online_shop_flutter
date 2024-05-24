@@ -31,7 +31,7 @@ final routerProvider = Provider<GoRouter>(
       initialLocation: '/catalog',
       redirect: (context, state) async {
         final restrictedLocations = [
-          const OrderDetailsRoute().location,
+          const DeliveryDetailsRoute().location,
           const OrderConfirmationRoute().location,
         ];
 

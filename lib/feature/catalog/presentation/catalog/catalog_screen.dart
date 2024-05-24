@@ -235,7 +235,6 @@ class _CatalogItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final imageSize = MediaQuery.sizeOf(context).width * 0.25;
-    final originalPrice = product.price / (100 - product.discountPercentage) * 100;
     final numberFormat = NumberFormat('###.##');
 
     return Card(
@@ -279,9 +278,9 @@ class _CatalogItemCard extends StatelessWidget {
                     const Gap.v(8),
                     Row(
                       children: [
-                        if (product.price != originalPrice) ...[
+                        if (product.price != product.originalPrice) ...[
                           Text(
-                            '${numberFormat.format(originalPrice)}\$',
+                            '${numberFormat.format(product.originalPrice)}\$',
                             style: TextStyle(
                               color: theme.colorScheme.error,
                               decoration: TextDecoration.lineThrough,

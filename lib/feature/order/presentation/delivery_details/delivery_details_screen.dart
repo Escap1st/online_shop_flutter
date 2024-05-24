@@ -5,17 +5,17 @@ import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/fading_edge_scroll_view.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/kit_button.dart';
-import '../../domain/entities/order_details.dart';
-import 'providers/order_details_provider.dart';
+import '../../domain/entities/order_delivery_details.dart';
+import 'providers/delivery_details_provider.dart';
 
-class OrderDetailsScreen extends ConsumerStatefulWidget {
-  const OrderDetailsScreen({super.key});
+class DeliveryDetailsScreen extends ConsumerStatefulWidget {
+  const DeliveryDetailsScreen({super.key});
 
   @override
-  ConsumerState<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
+  ConsumerState<DeliveryDetailsScreen> createState() => _DeliveryDetailsScreenState();
 }
 
-class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
+class _DeliveryDetailsScreenState extends ConsumerState<DeliveryDetailsScreen> {
   late final _nameKey = GlobalKey<FormFieldState<String>>();
   late final _surnameKey = GlobalKey<FormFieldState<String>>();
   late final _addressKey = GlobalKey<FormFieldState<String>>();
@@ -30,7 +30,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
 
   @override
   void initState() {
-    final orderDetailsState = ref.read(orderDetailsProvider);
+    final orderDetailsState = ref.read(deliveryDetailsProvider);
     if (orderDetailsState != null) {
       _nameTextController.text = orderDetailsState.name;
       _surnameTextController.text = orderDetailsState.surname;
@@ -144,7 +144,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
                 label: 'Continue',
                 onPressed: _areFieldsValid()
                     ? () {
-                        ref.read(orderDetailsProvider.notifier).state = OrderDetails(
+                        ref.read(deliveryDetailsProvider.notifier).state = OrderDeliveryDetails(
                           name: _nameTextController.text,
                           surname: _surnameTextController.text,
                           address: _addressTextController.text,

@@ -132,7 +132,7 @@ RouteBase get $cartRoute => GoRouteData.$route(
         ),
         GoRouteData.$route(
           path: 'order_details',
-          factory: $OrderDetailsRouteExtension._fromState,
+          factory: $DeliveryDetailsRouteExtension._fromState,
           routes: [
             GoRouteData.$route(
               path: 'order_confirmation',
@@ -177,9 +177,9 @@ extension $SignInRouteExtension on SignInRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $OrderDetailsRouteExtension on OrderDetailsRoute {
-  static OrderDetailsRoute _fromState(GoRouterState state) =>
-      const OrderDetailsRoute();
+extension $DeliveryDetailsRouteExtension on DeliveryDetailsRoute {
+  static DeliveryDetailsRoute _fromState(GoRouterState state) =>
+      const DeliveryDetailsRoute();
 
   String get location => GoRouteData.$location(
         '/cart/order_details',

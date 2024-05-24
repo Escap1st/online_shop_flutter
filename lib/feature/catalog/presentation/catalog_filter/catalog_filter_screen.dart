@@ -5,6 +5,7 @@ import '../../../../core/utils/iterable.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
+import '../../domain/entities/product_category.dart';
 import 'providers/catalog_filter_provider/catalog_filter_provider.dart';
 import 'providers/catalog_filters_data_provider/catalog_filters_data_provider.dart';
 
@@ -104,9 +105,9 @@ class _Categories extends StatelessWidget {
     super.key,
   });
 
-  final List<String> allItems;
-  final List<String> selectedItems;
-  final void Function(String) onItemToggled;
+  final List<ProductCategory> allItems;
+  final List<ProductCategory> selectedItems;
+  final void Function(ProductCategory) onItemToggled;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +118,7 @@ class _Categories extends StatelessWidget {
       children: allItems
           .map(
             (e) => ActionChip(
-              label: Text(e),
+              label: Text(e.name),
               backgroundColor: selectedItems.contains(e) ? colorScheme.primary : null,
               labelStyle: TextStyle(
                 color: selectedItems.contains(e) ? colorScheme.onPrimary : null,

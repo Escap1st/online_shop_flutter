@@ -13,7 +13,7 @@ import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../../catalog/domain/entities/product.dart';
 import '../../domain/entities/order.dart';
 import '../../domain/entities/order_entry.dart';
-import '../order_details/providers/order_details_provider.dart';
+import '../delivery_details/providers/delivery_details_provider.dart';
 import 'providers/order_confirmation_provider.dart';
 
 class OrderConfirmationScreen extends ConsumerWidget {
@@ -22,7 +22,7 @@ class OrderConfirmationScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.read(cartProvider).cart;
-    final orderDetails = ref.read(orderDetailsProvider);
+    final orderDetails = ref.read(deliveryDetailsProvider);
     final order = Order(
       entries: cart.positions.entries
           .map(
@@ -110,7 +110,7 @@ class _Summary extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartState = ref.read(cartProvider);
-    final orderDetailsState = ref.read(orderDetailsProvider);
+    final orderDetailsState = ref.read(deliveryDetailsProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),

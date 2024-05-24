@@ -27,6 +27,7 @@ dependencies:
   connectivity_plus: ^6.0.2
   uuid: ^4.4.0
   cloud_firestore: ^4.17.3
+  async: ^2.11.0
 
 dev_dependencies:
   flutter_test:

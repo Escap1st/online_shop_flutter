@@ -136,7 +136,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
         switch (next) {
           case AsyncData(:final value) when value == true:
             ref.read(authStateProvider.notifier).state = AuthState.email;
-            const OrderDetailsRoute().go(context);
+            const DeliveryDetailsRoute().go(context);
           case AsyncError(:final error, :final stackTrace):
             resolveDependency<IErrorHandler>().showNotification(
               context,
@@ -153,7 +153,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
         switch (next) {
           case AsyncData(:final value) when value == true:
             ref.read(authStateProvider.notifier).state = AuthState.google;
-            const OrderDetailsRoute().go(context);
+            const DeliveryDetailsRoute().go(context);
           case AsyncError(:final error, :final stackTrace):
             resolveDependency<IErrorHandler>().showNotification(
               context,

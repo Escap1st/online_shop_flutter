@@ -81,13 +81,13 @@ class _IProductApiClient implements IProductApiClient {
   }
 
   @override
-  Future<List<String>> getCategories() async {
+  Future<List<ProductCategoryModel>> getCategories() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _result =
-        await _dio.fetch<List<dynamic>>(_setStreamType<List<String>>(Options(
+    final _result = await _dio.fetch<List<dynamic>>(
+        _setStreamType<List<ProductCategoryModel>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -103,7 +103,10 @@ class _IProductApiClient implements IProductApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = _result.data!.cast<String>();
+    var value = _result.data!
+        .map((dynamic i) =>
+            ProductCategoryModel.fromJson(i as Map<String, dynamic>))
+        .toList();
     return value;
   }
 

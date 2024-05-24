@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'order_details.dart';
+import 'order_delivery_details.dart';
 import 'order_entry.dart';
 
 class Order extends Equatable {
@@ -12,7 +12,7 @@ class Order extends Equatable {
   });
 
   final List<OrderEntry> entries;
-  final OrderDetails details;
+  final OrderDeliveryDetails details;
   final DateTime? dateTime;
   final String? userId;
 
@@ -21,7 +21,7 @@ class Order extends Equatable {
 
   Order copyWith({
     List<OrderEntry>? entries,
-    OrderDetails? details,
+    OrderDeliveryDetails? details,
     DateTime? dateTime,
     String? userId,
   }) {

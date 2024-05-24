@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/di/dependencies.dart';
+import '../../../../domain/entities/product_category.dart';
 import '../product_categories_provider.dart';
 
 part 'catalog_filters_data_state.dart';
