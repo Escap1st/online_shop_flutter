@@ -22,5 +22,8 @@ class CheckAuthenticationNotifier extends AutoDisposeAsyncNotifier<AuthState?> {
   Future<void> check() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(_authenticationService.getAuthenticationState);
+    if (state.hasValue) {
+      ref.read(authStateProvider.notifier).state = state.requireValue!;
+    }
   }
 }

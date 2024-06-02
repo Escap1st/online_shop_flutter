@@ -14,10 +14,12 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
           json['details'] as Map<String, dynamic>),
       dateTime: json['dateTime'] as String,
       userId: json['userId'] as String,
+      orderId: json['orderId'] as String?,
     );
 
 Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
     <String, dynamic>{
+      'orderId': instance.orderId,
       'entries': instance.entries.map((e) => e.toJson()).toList(),
       'details': instance.details.toJson(),
       'dateTime': instance.dateTime,

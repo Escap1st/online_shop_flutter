@@ -41,7 +41,7 @@ class ProductRepository implements IProductRepository {
 
   @override
   Future<List<ProductCategory>> getCategories() async {
-    if (_categoriesCache != null) {
+    if (_categoriesCache == null) {
       await _categoriesRequestEphemeralCache.fetch(() async {
         final models = await _productApiClient.getCategories().handleErrors();
         _categoriesCache = models.map(ProductCategoryMapper().toEntity).toList();

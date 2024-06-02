@@ -61,7 +61,7 @@ class CatalogScreen extends ConsumerWidget {
           _AppBarAction(
             icon: Icons.shopping_cart,
             indicator: const _CartPositionsIndicator(),
-            onPressed: () => const CartRoute().push(context),
+            onPressed: () => const CartRoute().go(context),
           ),
         ],
       ),

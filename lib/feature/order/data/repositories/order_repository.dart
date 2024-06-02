@@ -4,6 +4,7 @@ import '../../domain/entities/order.dart';
 import '../../domain/repositories/order_repository.dart';
 import '../constants.dart';
 import '../mappers/order_mapper.dart';
+import '../models/order_model.dart';
 
 class OrderRepository implements IOrderRepository {
   OrderRepository({
@@ -14,13 +15,25 @@ class OrderRepository implements IOrderRepository {
 
   @override
   Future<void> createOrder(Order order) async {
-    final model = const OrderMapper().fromEntity(order);
-    await _firestore.collection(Constants.ordersCollection).add(model.toJson());
+    final orderModel = const OrderMapper().fromEntity(order);
+    await _firestore.collection(Constants.ordersCollection).add(orderModel.toJson());
   }
 
-  Future<void> cancelOrder() async {}
+  @override
+  Future<void> cancelOrder(String orderId) async {
+    await _firestore.collection(Constants.ordersCollection).doc(orderId).delete();
+  }
 
-  Future<List<Order>> getOrders() async {
-    return [];
+  @override
+  Future<List<Order>> getOrders(String userId) async {
+    final ordersSnapshot = await _firestore
+        .collection(Constants.ordersCollection)
+        .where(Constants.orderUserIdField, isEqualTo: userId)
+        .get();
+
+    return ordersSnapshot.docs.map((e) {
+      final orderModel = OrderModel.fromJson(e.data());
+      return const OrderMapper().toEntity(orderModel).copyWith(orderId: e.id);
+    }).toList();
   }
 }

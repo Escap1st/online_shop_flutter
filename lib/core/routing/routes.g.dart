@@ -8,13 +8,14 @@ part of 'routes.dart';
 
 List<RouteBase> get $appRoutes => [
       $mainRoute,
-      $cartRoute,
     ];
 
 RouteBase get $mainRoute => StatefulShellRouteData.$route(
+      parentNavigatorKey: MainRoute.$parentNavigatorKey,
       factory: $MainRouteExtension._fromState,
       branches: [
         StatefulShellBranchData.$branch(
+          navigatorKey: CatalogBranch.$navigatorKey,
           routes: [
             GoRouteData.$route(
               path: '/catalog',
@@ -28,15 +29,49 @@ RouteBase get $mainRoute => StatefulShellRouteData.$route(
                   path: 'catalog_filter',
                   factory: $CatalogFilterRouteExtension._fromState,
                 ),
+                GoRouteData.$route(
+                  path: 'cart',
+                  parentNavigatorKey: CartRoute.$parentNavigatorKey,
+                  factory: $CartRouteExtension._fromState,
+                  routes: [
+                    GoRouteData.$route(
+                      path: 'sign_in',
+                      parentNavigatorKey: CartSignInRoute.$parentNavigatorKey,
+                      factory: $CartSignInRouteExtension._fromState,
+                    ),
+                    GoRouteData.$route(
+                      path: 'order_details',
+                      parentNavigatorKey:
+                          DeliveryDetailsRoute.$parentNavigatorKey,
+                      factory: $DeliveryDetailsRouteExtension._fromState,
+                      routes: [
+                        GoRouteData.$route(
+                          path: 'order_confirmation',
+                          parentNavigatorKey:
+                              OrderConfirmationRoute.$parentNavigatorKey,
+                          factory: $OrderConfirmationRouteExtension._fromState,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
         ),
         StatefulShellBranchData.$branch(
+          navigatorKey: ProfileBranch.$navigatorKey,
           routes: [
             GoRouteData.$route(
               path: '/profile',
               factory: $ProfileRouteExtension._fromState,
+              routes: [
+                GoRouteData.$route(
+                  path: 'sign_in',
+                  parentNavigatorKey: ProfileSignInRoute.$parentNavigatorKey,
+                  factory: $ProfileSignInRouteExtension._fromState,
+                ),
+              ],
             ),
           ],
         ),
@@ -105,49 +140,11 @@ extension $CatalogFilterRouteExtension on CatalogFilterRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $ProfileRouteExtension on ProfileRoute {
-  static ProfileRoute _fromState(GoRouterState state) => const ProfileRoute();
-
-  String get location => GoRouteData.$location(
-        '/profile',
-      );
-
-  void go(BuildContext context) => context.go(location);
-
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  void replace(BuildContext context) => context.replace(location);
-}
-
-RouteBase get $cartRoute => GoRouteData.$route(
-      path: '/cart',
-      factory: $CartRouteExtension._fromState,
-      routes: [
-        GoRouteData.$route(
-          path: 'sign_in',
-          factory: $SignInRouteExtension._fromState,
-        ),
-        GoRouteData.$route(
-          path: 'order_details',
-          factory: $DeliveryDetailsRouteExtension._fromState,
-          routes: [
-            GoRouteData.$route(
-              path: 'order_confirmation',
-              factory: $OrderConfirmationRouteExtension._fromState,
-            ),
-          ],
-        ),
-      ],
-    );
-
 extension $CartRouteExtension on CartRoute {
   static CartRoute _fromState(GoRouterState state) => const CartRoute();
 
   String get location => GoRouteData.$location(
-        '/cart',
+        '/catalog/cart',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -160,11 +157,12 @@ extension $CartRouteExtension on CartRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $SignInRouteExtension on SignInRoute {
-  static SignInRoute _fromState(GoRouterState state) => const SignInRoute();
+extension $CartSignInRouteExtension on CartSignInRoute {
+  static CartSignInRoute _fromState(GoRouterState state) =>
+      const CartSignInRoute();
 
   String get location => GoRouteData.$location(
-        '/cart/sign_in',
+        '/catalog/cart/sign_in',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -182,7 +180,7 @@ extension $DeliveryDetailsRouteExtension on DeliveryDetailsRoute {
       const DeliveryDetailsRoute();
 
   String get location => GoRouteData.$location(
-        '/cart/order_details',
+        '/catalog/cart/order_details',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -200,7 +198,42 @@ extension $OrderConfirmationRouteExtension on OrderConfirmationRoute {
       const OrderConfirmationRoute();
 
   String get location => GoRouteData.$location(
-        '/cart/order_details/order_confirmation',
+        '/catalog/cart/order_details/order_confirmation',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $ProfileRouteExtension on ProfileRoute {
+  static ProfileRoute _fromState(GoRouterState state) => const ProfileRoute();
+
+  String get location => GoRouteData.$location(
+        '/profile',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $ProfileSignInRouteExtension on ProfileSignInRoute {
+  static ProfileSignInRoute _fromState(GoRouterState state) =>
+      const ProfileSignInRoute();
+
+  String get location => GoRouteData.$location(
+        '/profile/sign_in',
       );
 
   void go(BuildContext context) => context.go(location);

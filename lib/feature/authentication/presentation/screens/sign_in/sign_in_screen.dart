@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../core/auth_state.dart';
 import '../../../../../core/di/dependencies.dart';
 import '../../../../../core/error_handler.dart';
-import '../../../../../core/routing/routes.dart';
 import '../../../../../shared/presentation/widgets/gap.dart';
 import '../../../../../shared/presentation/widgets/kit_button.dart';
 import 'providers/sign_in_email_provider.dart';
@@ -136,7 +136,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
         switch (next) {
           case AsyncData(:final value) when value == true:
             ref.read(authStateProvider.notifier).state = AuthState.email;
-            const DeliveryDetailsRoute().go(context);
+            context.pop();
           case AsyncError(:final error, :final stackTrace):
             resolveDependency<IErrorHandler>().showNotification(
               context,
@@ -153,7 +153,7 @@ class _SignInState extends ConsumerState<SignInScreen> {
         switch (next) {
           case AsyncData(:final value) when value == true:
             ref.read(authStateProvider.notifier).state = AuthState.google;
-            const DeliveryDetailsRoute().go(context);
+            context.pop();
           case AsyncError(:final error, :final stackTrace):
             resolveDependency<IErrorHandler>().showNotification(
               context,

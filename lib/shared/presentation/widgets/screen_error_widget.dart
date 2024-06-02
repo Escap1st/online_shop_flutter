@@ -49,12 +49,12 @@ class ScreenErrorWidget extends StatelessWidget {
                 widthFactor: 0.33,
                 child: KitButton(
                   label: 'Details',
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ErrorDetailsScreen(
-                        error: error,
-                        stackTrace: stackTrace,
-                      ),
+                  onPressed: () => showDialog(
+                    context: context,
+                    useSafeArea: false,
+                    builder: (context) => ErrorDetailsScreen(
+                      error: error,
+                      stackTrace: stackTrace,
                     ),
                   ),
                 ),

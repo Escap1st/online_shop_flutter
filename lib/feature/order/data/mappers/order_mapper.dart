@@ -10,6 +10,7 @@ class OrderMapper implements EntityMapper<Order, OrderModel> {
   @override
   OrderModel fromEntity(Order entity) {
     return OrderModel(
+      orderId: entity.orderId,
       entries: entity.entries.map(const OrderEntryMapper().fromEntity).toList(),
       details: const OrderDeliveryDetailsMapper().fromEntity(entity.details),
       dateTime: entity.dateTime!.toIso8601String(),

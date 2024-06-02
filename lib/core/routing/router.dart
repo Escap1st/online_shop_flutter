@@ -10,7 +10,6 @@ import 'routes.dart';
 
 final routerProvider = Provider<GoRouter>(
   (ref) {
-    final routerKey = GlobalKey<NavigatorState>(debugLabel: 'routerKey');
     final authState = ValueNotifier<AuthState>(AuthState.none);
     ref
       ..onDispose(authState.dispose)
@@ -22,7 +21,7 @@ final routerProvider = Provider<GoRouter>(
       );
 
     final router = GoRouter(
-      navigatorKey: routerKey,
+      navigatorKey: rootNavigatorKey,
       refreshListenable: authState,
       observers: [
         TalkerRouteObserver(talker),
@@ -42,10 +41,10 @@ final routerProvider = Provider<GoRouter>(
           if (checkAuthenticationState is AsyncData) {
             ref.read(authStateProvider.notifier).state = checkAuthenticationState.value!;
             if (checkAuthenticationState.value == AuthState.none) {
-              return const SignInRoute().location;
+              return _getSignInRedirectPath(state.uri);
             }
           } else {
-            return const SignInRoute().location;
+            return _getSignInRedirectPath(state.uri);
           }
         }
 
@@ -58,3 +57,15 @@ final routerProvider = Provider<GoRouter>(
     return router;
   },
 );
+
+String _getSignInRedirectPath(Uri uri) {
+  final newUri = uri
+      .replace(
+        pathSegments: List.of(uri.pathSegments)
+          ..removeLast()
+          ..add('sign_in'),
+      )
+      .toString();
+
+  return '/$newUri';
+}

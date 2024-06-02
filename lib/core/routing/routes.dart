@@ -16,9 +16,13 @@ import '../../shared/presentation/screens/main_screen.dart';
 
 part 'routes.g.dart';
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+final _catalogNavigatorKey = GlobalKey<NavigatorState>();
+final _profileNavigatorKey = GlobalKey<NavigatorState>();
+
 @TypedStatefulShellRoute<MainRoute>(
   branches: [
-    TypedStatefulShellBranch(
+    TypedStatefulShellBranch<CatalogBranch>(
       routes: [
         TypedGoRoute<CatalogRoute>(
           path: '/catalog',
@@ -29,14 +33,35 @@ part 'routes.g.dart';
             TypedGoRoute<CatalogFilterRoute>(
               path: 'catalog_filter',
             ),
+            TypedGoRoute<CartRoute>(
+              path: 'cart',
+              routes: [
+                TypedGoRoute<CartSignInRoute>(
+                  path: 'sign_in',
+                ),
+                TypedGoRoute<DeliveryDetailsRoute>(
+                  path: 'order_details',
+                  routes: [
+                    TypedGoRoute<OrderConfirmationRoute>(
+                      path: 'order_confirmation',
+                    ),
+                  ],
+                ),
+              ],
+            )
           ],
         ),
       ],
     ),
-    TypedStatefulShellBranch(
+    TypedStatefulShellBranch<ProfileBranch>(
       routes: [
         TypedGoRoute<ProfileRoute>(
           path: '/profile',
+          routes: [
+            TypedGoRoute<ProfileSignInRoute>(
+              path: 'sign_in',
+            )
+          ],
         ),
       ],
     ),
@@ -44,6 +69,8 @@ part 'routes.g.dart';
 )
 class MainRoute extends StatefulShellRouteData {
   const MainRoute();
+
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
 
   @override
   Widget builder(
@@ -53,6 +80,18 @@ class MainRoute extends StatefulShellRouteData {
   ) {
     return MainScreen(navigationShell: navigationShell);
   }
+}
+
+class CatalogBranch extends StatefulShellBranchData {
+  const CatalogBranch();
+
+  static final $navigatorKey = _catalogNavigatorKey;
+}
+
+class ProfileBranch extends StatefulShellBranchData {
+  const ProfileBranch();
+
+  static final $navigatorKey = _profileNavigatorKey;
 }
 
 class CatalogRoute extends GoRouteData {
@@ -88,24 +127,10 @@ class ProductDetailsRoute extends GoRouteData {
   }
 }
 
-@TypedGoRoute<CartRoute>(
-  path: '/cart',
-  routes: [
-    TypedGoRoute<SignInRoute>(
-      path: 'sign_in',
-    ),
-    TypedGoRoute<DeliveryDetailsRoute>(
-      path: 'order_details',
-      routes: [
-        TypedGoRoute<OrderConfirmationRoute>(
-          path: 'order_confirmation',
-        ),
-      ],
-    ),
-  ],
-)
 class CartRoute extends GoRouteData {
   const CartRoute();
+
+  static final $parentNavigatorKey = rootNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
@@ -122,6 +147,18 @@ class CatalogFilterRoute extends GoRouteData {
   }
 }
 
+class ProfileSignInRoute extends SignInRoute {
+  const ProfileSignInRoute();
+
+  static final $parentNavigatorKey = rootNavigatorKey;
+}
+
+class CartSignInRoute extends SignInRoute {
+  const CartSignInRoute();
+
+  static final $parentNavigatorKey = rootNavigatorKey;
+}
+
 class SignInRoute extends GoRouteData {
   const SignInRoute();
 
@@ -134,6 +171,8 @@ class SignInRoute extends GoRouteData {
 class OrderConfirmationRoute extends GoRouteData {
   const OrderConfirmationRoute();
 
+  static final $parentNavigatorKey = rootNavigatorKey;
+
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const OrderConfirmationScreen();
@@ -142,6 +181,8 @@ class OrderConfirmationRoute extends GoRouteData {
 
 class DeliveryDetailsRoute extends GoRouteData {
   const DeliveryDetailsRoute();
+
+  static final $parentNavigatorKey = rootNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
