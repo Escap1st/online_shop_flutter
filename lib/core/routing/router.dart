@@ -59,13 +59,16 @@ final routerProvider = Provider<GoRouter>(
 );
 
 String _getSignInRedirectPath(Uri uri) {
-  final newUri = uri
-      .replace(
-        pathSegments: List.of(uri.pathSegments)
-          ..removeLast()
-          ..add('sign_in'),
-      )
-      .toString();
+  final newUri = uri.replace(
+    pathSegments: List.of(uri.pathSegments)
+      ..removeLast()
+      ..add('sign_in'),
+    queryParameters: {
+      'redirect-uri': uri.toString(),
+    },
+  ).toString();
+
+  logInfo('Sign in uri', newUri);
 
   return '/$newUri';
 }

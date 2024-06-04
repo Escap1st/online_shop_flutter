@@ -11,7 +11,9 @@ import 'providers/sign_in_email_provider.dart';
 import 'providers/sign_in_google_provider.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({super.key, this.redirectUri});
+
+  final String? redirectUri;
 
   @override
   ConsumerState<SignInScreen> createState() => _SignInState();
@@ -132,36 +134,12 @@ class _SignInState extends ConsumerState<SignInScreen> {
   void _setListeners(WidgetRef ref) {
     ref.listen(
       signInEmailProvider,
-      (previous, next) {
-        switch (next) {
-          case AsyncData(:final value) when value == true:
-            ref.read(authStateProvider.notifier).state = AuthState.email;
-            context.pop();
-          case AsyncError(:final error, :final stackTrace):
-            resolveDependency<IErrorHandler>().showNotification(
-              context,
-              error: error,
-              stackTrace: stackTrace,
-            );
-        }
-      },
+      (previous, next) => _handleProviderState(next, AuthState.email),
     );
 
     ref.listen(
       signInGoogleProvider,
-      (previous, next) {
-        switch (next) {
-          case AsyncData(:final value) when value == true:
-            ref.read(authStateProvider.notifier).state = AuthState.google;
-            context.pop();
-          case AsyncError(:final error, :final stackTrace):
-            resolveDependency<IErrorHandler>().showNotification(
-              context,
-              error: error,
-              stackTrace: stackTrace,
-            );
-        }
-      },
+      (previous, next) => _handleProviderState(next, AuthState.google),
     );
   }
 
@@ -177,5 +155,23 @@ class _SignInState extends ConsumerState<SignInScreen> {
 
   bool _areFieldsValid() {
     return _isPasswordValid && _isLoginValid;
+  }
+
+  void _handleProviderState(AsyncValue<bool> state, AuthState stateToSet) {
+    switch (state) {
+      case AsyncData(:final value) when value == true:
+        ref.read(authStateProvider.notifier).state = stateToSet;
+        if (widget.redirectUri != null) {
+          context.replace(widget.redirectUri!);
+        } else {
+          context.pop();
+        }
+      case AsyncError(:final error, :final stackTrace):
+        resolveDependency<IErrorHandler>().showNotification(
+          context,
+          error: error,
+          stackTrace: stackTrace,
+        );
+    }
   }
 }

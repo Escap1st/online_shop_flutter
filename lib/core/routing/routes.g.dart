@@ -158,11 +158,15 @@ extension $CartRouteExtension on CartRoute {
 }
 
 extension $CartSignInRouteExtension on CartSignInRoute {
-  static CartSignInRoute _fromState(GoRouterState state) =>
-      const CartSignInRoute();
+  static CartSignInRoute _fromState(GoRouterState state) => CartSignInRoute(
+        redirectUri: state.uri.queryParameters['redirect-uri'],
+      );
 
   String get location => GoRouteData.$location(
         '/catalog/cart/sign_in',
+        queryParams: {
+          if (redirectUri != null) 'redirect-uri': redirectUri,
+        },
       );
 
   void go(BuildContext context) => context.go(location);
@@ -230,10 +234,15 @@ extension $ProfileRouteExtension on ProfileRoute {
 
 extension $ProfileSignInRouteExtension on ProfileSignInRoute {
   static ProfileSignInRoute _fromState(GoRouterState state) =>
-      const ProfileSignInRoute();
+      ProfileSignInRoute(
+        redirectUri: state.uri.queryParameters['redirect-uri'],
+      );
 
   String get location => GoRouteData.$location(
         '/profile/sign_in',
+        queryParams: {
+          if (redirectUri != null) 'redirect-uri': redirectUri,
+        },
       );
 
   void go(BuildContext context) => context.go(location);

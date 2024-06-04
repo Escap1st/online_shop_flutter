@@ -1,3 +1,5 @@
+// ignore_for_file: overridden_fields
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -148,23 +150,31 @@ class CatalogFilterRoute extends GoRouteData {
 }
 
 class ProfileSignInRoute extends SignInRoute {
-  const ProfileSignInRoute();
+  const ProfileSignInRoute({this.redirectUri});
+
+  @override
+  final String? redirectUri;
 
   static final $parentNavigatorKey = rootNavigatorKey;
 }
 
 class CartSignInRoute extends SignInRoute {
-  const CartSignInRoute();
+  const CartSignInRoute({this.redirectUri});
+
+  @override
+  final String? redirectUri;
 
   static final $parentNavigatorKey = rootNavigatorKey;
 }
 
 class SignInRoute extends GoRouteData {
-  const SignInRoute();
+  const SignInRoute({this.redirectUri});
+
+  final String? redirectUri;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const SignInScreen();
+    return SignInScreen(redirectUri: redirectUri);
   }
 }
 
