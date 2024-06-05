@@ -8,6 +8,8 @@ abstract class IAuthenticationRepository {
 
   Future<String?> getUserId();
 
+  Future<String?> getLogin();
+
   Future<void> signInGoogle();
 
   Future<void> signInEmail({required SignInEmailParams params});

@@ -4,6 +4,7 @@ import 'feature/authentication/registrar.dart';
 import 'feature/cart/registrar.dart';
 import 'feature/catalog/registrar.dart';
 import 'feature/order/registrar.dart';
+import 'feature/profile/registrar.dart';
 
 class AppRegistrar implements IRegistrar {
   @override
@@ -14,6 +15,7 @@ class AppRegistrar implements IRegistrar {
       CatalogRegistrar(),
       CartRegistrar(),
       OrderRegistrar(),
+      ProfileRegistrar(),
     ];
 
     for (final e in registrars) {

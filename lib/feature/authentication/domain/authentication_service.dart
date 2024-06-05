@@ -9,6 +9,8 @@ abstract class IAuthenticationService {
 
   Future<String?> getUserId();
 
+  Future<String?> getLogin();
+
   Future<void> signInGoogle();
 
   Future<void> signInEmail({required SignInEmailParams params});
@@ -29,6 +31,9 @@ class AuthenticationService implements IAuthenticationService {
 
   @override
   Future<String?> getUserId() => _authenticationRepository.getUserId();
+
+  @override
+  Future<String?> getLogin() => _authenticationRepository.getLogin();
 
   @override
   Future<void> signInEmail({required SignInEmailParams params}) =>

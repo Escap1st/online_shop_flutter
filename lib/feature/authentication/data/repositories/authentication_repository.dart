@@ -40,6 +40,11 @@ class AuthenticationRepository implements IAuthenticationRepository {
   }
 
   @override
+  Future<String?> getLogin() async {
+    return _firebaseAuth.currentUser?.email ?? _googleSignIn.currentUser?.email;
+  }
+
+  @override
   Future<void> signInEmail({required SignInEmailParams params}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
