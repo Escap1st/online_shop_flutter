@@ -13,4 +13,6 @@ abstract class IAuthenticationRepository {
   Future<void> signInGoogle();
 
   Future<void> signInEmail({required SignInEmailParams params});
+
+  Future<void> logout();
 }

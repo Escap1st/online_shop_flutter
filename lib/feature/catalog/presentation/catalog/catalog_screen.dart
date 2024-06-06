@@ -335,19 +335,12 @@ class _Indicator extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.all(4),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.error,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(8),
-        ),
-      ),
-      height: 16,
-      width: 16,
-      child: Text(
-        value.toString(),
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onError,
+      child: Badge(
+        label: Text(
+          value.toString(),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onError,
+          ),
         ),
       ),
     );

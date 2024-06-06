@@ -85,4 +85,13 @@ class AuthenticationRepository implements IAuthenticationRepository {
       throw GoogleSignInFailedException();
     }
   }
+
+  @override
+  Future<void> logout() async {
+    if (_firebaseAuth.currentUser != null) {
+      await _firebaseAuth.signOut();
+    } else if (_googleSignIn.currentUser != null) {
+      await _googleSignIn.signOut();
+    }
+  }
 }

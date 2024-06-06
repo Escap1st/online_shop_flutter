@@ -14,6 +14,8 @@ abstract class IAuthenticationService {
   Future<void> signInGoogle();
 
   Future<void> signInEmail({required SignInEmailParams params});
+
+  Future<void> logout();
 }
 
 class AuthenticationService implements IAuthenticationService {
@@ -41,4 +43,7 @@ class AuthenticationService implements IAuthenticationService {
 
   @override
   Future<void> signInGoogle() => _authenticationRepository.signInGoogle();
+
+  @override
+  Future<void> logout() => _authenticationRepository.logout();
 }

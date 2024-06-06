@@ -7,6 +7,7 @@ import 'data/repositories/authentication_repository.dart';
 import 'domain/authentication_service.dart';
 import 'domain/repositories/authentication_repository.dart';
 import 'presentation/common_providers/check_authentication_provider.dart';
+import 'presentation/common_providers/log_out_provider.dart';
 import 'presentation/screens/sign_in/providers/sign_in_email_provider.dart';
 import 'presentation/screens/sign_in/providers/sign_in_google_provider.dart';
 
@@ -40,6 +41,11 @@ class AuthenticationRegistrar implements IRegistrar {
     );
     registerFactoryDependency(
       () => CheckAuthenticationNotifier(
+        authenticationService: resolveDependency(),
+      ),
+    );
+    registerFactoryDependency(
+      () => LogOutNotifier(
         authenticationService: resolveDependency(),
       ),
     );

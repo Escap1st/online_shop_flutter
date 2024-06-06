@@ -4,11 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/auth_state.dart';
 import '../../../../core/routing/routes.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/kit_button.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../authentication/presentation/common_providers/check_authentication_provider.dart';
+import '../../../authentication/presentation/common_providers/log_out_provider.dart';
 import 'providers/profile_overview_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -101,18 +103,21 @@ class _Loaded extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            const Gap.v(32),
+            const Gap.v(48),
             Center(
               child: ClipOval(
                 child: Container(
                   padding: const EdgeInsets.all(8),
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  child: const Icon(
+                  color: theme.colorScheme.secondaryContainer,
+                  child: Icon(
                     Icons.person_outline,
+                    color: theme.colorScheme.onSecondaryContainer,
                     size: 56,
                   ),
                 ),
@@ -121,12 +126,127 @@ class _Loaded extends StatelessWidget {
             const Gap.v(16),
             Text(
               state.login ?? 'Lovely user',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: theme.textTheme.titleLarge,
             ),
-            const Gap.v(32),
+            const Gap.v(48),
+            _ListItem(
+              icon: Icons.watch_later_outlined,
+              label: 'Orders history',
+              trailing: state.ordersCount?.let((it) => _Badge(value: it)),
+              onPressed: () {},
+            ),
+            _ListItem(
+              icon: Icons.favorite_outline,
+              label: 'Favorites',
+              trailing: state.favoritesCount?.let((it) => _Badge(value: it)),
+              onPressed: () {},
+            ),
+            const Spacer(),
+            _ListItem(
+              icon: Icons.logout,
+              label: 'Log out',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const _LogoutDialog(),
+                );
+              },
+            ),
+            const Gap.v(16),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ListItem extends StatelessWidget {
+  const _ListItem({
+    required this.icon,
+    required this.label,
+    super.key,
+    this.trailing,
+    this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final Widget? trailing;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 28,
+            ),
+            const Gap.h(16),
+            Expanded(
+                child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyLarge,
+            )),
+            if (trailing != null) ...[
+              const Gap.h(16),
+              trailing!,
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  const _Badge({required this.value, super.key});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Badge(
+      label: Text(
+        value.toString(),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSecondaryContainer,
+        ),
+      ),
+      largeSize: 24,
+      backgroundColor: theme.colorScheme.secondaryContainer,
+    );
+  }
+}
+
+class _LogoutDialog extends ConsumerWidget {
+  const _LogoutDialog({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text('Do you really want to be logged out?'),
+      actions: [
+        TextButton(
+          onPressed: Navigator.of(context).pop,
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () async {
+            await ref.read(logOutProvider.notifier).call();
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: const Text('Yes, I do'),
+        ),
+      ],
     );
   }
 }
