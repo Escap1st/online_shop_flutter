@@ -8,6 +8,7 @@ class ProfileRegistrar implements IRegistrar {
     registerFactoryDependency(
       () => ProfileOverviewNotifier(
         authenticationService: resolveDependency(),
+        orderService: resolveDependency(),
       ),
     );
   }

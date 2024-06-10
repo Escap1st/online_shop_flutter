@@ -213,10 +213,14 @@ class _Badge extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Badge(
-      label: Text(
-        value.toString(),
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer,
+      label: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 24),
+        child: Text(
+          value.toString(),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSecondaryContainer,
+          ),
+          textAlign: TextAlign.center,
         ),
       ),
       largeSize: 24,

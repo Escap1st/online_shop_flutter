@@ -20,6 +20,12 @@ class OrderMapper implements EntityMapper<Order, OrderModel> {
 
   @override
   Order toEntity(OrderModel model) {
-    throw UnimplementedError();
+    return Order(
+      entries: model.entries.map(const OrderEntryMapper().toEntity).toList(),
+      details: const OrderDeliveryDetailsMapper().toEntity(model.details),
+      orderId: model.orderId,
+      dateTime: DateTime.parse(model.dateTime),
+      userId: model.userId,
+    );
   }
 }

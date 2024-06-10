@@ -16,6 +16,10 @@ class OrderEntryMapper implements EntityMapper<OrderEntry, OrderEntryModel> {
 
   @override
   OrderEntry toEntity(OrderEntryModel model) {
-    throw UnimplementedError();
+    return OrderEntry(
+      productId: model.productId,
+      price: model.price,
+      count: model.count,
+    );
   }
 }

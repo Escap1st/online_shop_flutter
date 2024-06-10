@@ -17,6 +17,10 @@ class OrderDeliveryDetailsMapper
 
   @override
   OrderDeliveryDetails toEntity(OrderDeliveryDetailsModel model) {
-    throw UnimplementedError();
+    return OrderDeliveryDetails(
+      name: model.name,
+      surname: model.surname,
+      address: model.address,
+    );
   }
 }

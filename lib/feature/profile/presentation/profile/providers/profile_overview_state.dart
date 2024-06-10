@@ -13,4 +13,16 @@ class ProfileOverviewState extends Equatable {
 
   @override
   List<Object?> get props => [login, favoritesCount, ordersCount];
+
+  ProfileOverviewState copyWith({
+    String? login,
+    int? favoritesCount,
+    int? ordersCount,
+  }) {
+    return ProfileOverviewState(
+      login: login ?? this.login,
+      favoritesCount: favoritesCount ?? this.favoritesCount,
+      ordersCount: ordersCount ?? this.ordersCount,
+    );
+  }
 }

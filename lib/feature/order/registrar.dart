@@ -17,6 +17,7 @@ class OrderRegistrar implements IRegistrar {
     );
     registerLazySingletonDependency<IOrderService>(
       () => OrderService(
+        authenticationService: resolveDependency(),
         orderRepository: resolveDependency(),
       ),
     );
