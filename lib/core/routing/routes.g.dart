@@ -71,6 +71,11 @@ RouteBase get $mainRoute => StatefulShellRouteData.$route(
                   parentNavigatorKey: ProfileSignInRoute.$parentNavigatorKey,
                   factory: $ProfileSignInRouteExtension._fromState,
                 ),
+                GoRouteData.$route(
+                  path: 'orders_history',
+                  parentNavigatorKey: OrdersHistoryRoute.$parentNavigatorKey,
+                  factory: $OrdersHistoryRouteExtension._fromState,
+                ),
               ],
             ),
           ],
@@ -253,4 +258,26 @@ extension $ProfileSignInRouteExtension on ProfileSignInRoute {
       context.pushReplacement(location);
 
   void replace(BuildContext context) => context.replace(location);
+}
+
+extension $OrdersHistoryRouteExtension on OrdersHistoryRoute {
+  static OrdersHistoryRoute _fromState(GoRouterState state) =>
+      OrdersHistoryRoute(
+        $extra: state.extra as List<Order>?,
+      );
+
+  String get location => GoRouteData.$location(
+        '/profile/orders_history',
+      );
+
+  void go(BuildContext context) => context.go(location, extra: $extra);
+
+  Future<T?> push<T>(BuildContext context) =>
+      context.push<T>(location, extra: $extra);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location, extra: $extra);
+
+  void replace(BuildContext context) =>
+      context.replace(location, extra: $extra);
 }

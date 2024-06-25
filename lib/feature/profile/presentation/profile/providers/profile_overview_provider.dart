@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/di/dependencies.dart';
 import '../../../../authentication/domain/authentication_service.dart';
+import '../../../../catalog/domain/entities/product.dart';
+import '../../../../order/domain/entities/order.dart';
 import '../../../../order/domain/order_service.dart';
 
 part 'profile_overview_state.dart';
@@ -36,7 +38,7 @@ class ProfileOverviewNotifier extends StateNotifier<AsyncValue<ProfileOverviewSt
       await AsyncValue.guard(() async {
         final orders = await _orderService.getOrders();
         state = AsyncData(
-          state.value!.copyWith(ordersCount: orders.length),
+          state.value!.copyWith(orders: orders),
         );
       });
     }

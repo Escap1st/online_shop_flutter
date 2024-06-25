@@ -8,9 +8,7 @@ import 'presentation/cart/providers/cart/cart_provider.dart';
 class CartRegistrar implements IRegistrar {
   @override
   void register() {
-    registerLazySingletonDependency<ICartRepository>(
-      () => CartRepository(),
-    );
+    registerLazySingletonDependency<ICartRepository>(CartRepository.new);
     registerLazySingletonDependency<ICartService>(
       () => CartService(cartRepository: resolveDependency()),
     );

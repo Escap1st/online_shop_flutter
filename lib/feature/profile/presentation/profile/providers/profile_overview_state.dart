@@ -3,26 +3,26 @@ part of 'profile_overview_provider.dart';
 class ProfileOverviewState extends Equatable {
   const ProfileOverviewState({
     required this.login,
-    this.favoritesCount,
-    this.ordersCount,
+    this.favoriteProducts,
+    this.orders,
   });
 
   final String? login;
-  final int? favoritesCount;
-  final int? ordersCount;
+  final List<Product>? favoriteProducts;
+  final List<Order>? orders;
 
   @override
-  List<Object?> get props => [login, favoritesCount, ordersCount];
+  List<Object?> get props => [login, favoriteProducts, orders];
 
   ProfileOverviewState copyWith({
     String? login,
-    int? favoritesCount,
-    int? ordersCount,
+    List<Product>? favoriteProducts,
+    List<Order>? orders,
   }) {
     return ProfileOverviewState(
       login: login ?? this.login,
-      favoritesCount: favoritesCount ?? this.favoritesCount,
-      ordersCount: ordersCount ?? this.ordersCount,
+      favoriteProducts: favoriteProducts ?? this.favoriteProducts,
+      orders: orders ?? this.orders,
     );
   }
 }

@@ -18,6 +18,16 @@ class Order extends Equatable {
   final DateTime? dateTime;
   final String? userId;
 
+  int get items => entries.fold(0, (value, element) => value + element.count);
+
+  double get totalSum {
+    var sum = 0.0;
+    for (final e in entries) {
+      sum += e.price * e.count;
+    }
+    return sum;
+  }
+
   @override
   List<Object?> get props => [orderId, entries, details, dateTime, userId];
 

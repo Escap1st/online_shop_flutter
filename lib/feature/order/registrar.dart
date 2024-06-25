@@ -24,7 +24,6 @@ class OrderRegistrar implements IRegistrar {
     registerFactoryDependency(
       () => OrderConfirmationNotifier(
         orderService: resolveDependency(),
-        authenticationService: resolveDependency(),
       ),
     );
   }

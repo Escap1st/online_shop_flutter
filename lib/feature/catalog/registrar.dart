@@ -31,15 +31,9 @@ class CatalogRegistrar implements IRegistrar {
         catalogService: resolveDependency(),
       ),
     );
-    registerFactoryDependency(
-      () => CatalogFilterNotifier(),
-    );
-    registerFactoryDependency(
-      () => CatalogFiltersDataNotifier(),
-    );
-    registerFactoryDependency(
-      () => CatalogNotifier(),
-    );
+    registerFactoryDependency(CatalogFilterNotifier.new);
+    registerFactoryDependency(CatalogFiltersDataNotifier.new);
+    registerFactoryDependency(CatalogNotifier.new);
     registerFactoryDependency(
       () => ProductDetailsNotifier(
         catalogService: resolveDependency(),

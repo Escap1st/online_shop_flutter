@@ -84,7 +84,10 @@ class _LoadedNonEmptyState extends State<_LoadedNonEmpty> {
             const Gap.v(12),
             _TotalSection(title: 'Items', value: widget.cart.items.toString()),
             const Gap.v(12),
-            _TotalSection(title: 'Total sum', value: '${widget.cart.totalSum}\$'),
+            _TotalSection(
+              title: 'Total sum',
+              value: '${widget.cart.totalSum.toStringAsFixed(2)}\$',
+            ),
             const Gap.v(12),
             const Divider(indent: 8, endIndent: 8),
           ],

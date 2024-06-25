@@ -29,6 +29,6 @@ class CoreRegistrar implements IRegistrar {
         ),
     );
 
-    registerLazySingletonDependency<IErrorHandler>(() => ErrorHandler());
+    registerLazySingletonDependency<IErrorHandler>(ErrorHandler.new);
   }
 }

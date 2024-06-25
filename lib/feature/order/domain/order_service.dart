@@ -22,23 +22,22 @@ class OrderService implements IOrderService {
   final IOrderRepository _orderRepository;
 
   @override
-  Future<void> createOrder(Order order) => _orderRepository.createOrder(order);
+  Future<void> createOrder(Order order) async => _orderRepository.createOrder(
+        order.copyWith(userId: await _userId),
+      );
 
   @override
-  Future<void> cancelOrder(String orderId) async {
+  Future<void> cancelOrder(String orderId) => _orderRepository.cancelOrder(orderId);
+
+  @override
+  Future<List<Order>> getOrders() async => _orderRepository.getOrders(await _userId);
+
+  Future<String> get _userId async {
     final userId = await _authenticationService.getUserId();
     if (userId == null) {
       throw UnauthenticatedUserException();
     }
-    return _orderRepository.cancelOrder(orderId);
-  }
 
-  @override
-  Future<List<Order>> getOrders() async {
-    final userId = await _authenticationService.getUserId();
-    if (userId == null) {
-      throw UnauthenticatedUserException();
-    }
-    return _orderRepository.getOrders(userId);
+    return userId;
   }
 }

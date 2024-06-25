@@ -132,13 +132,13 @@ class _Loaded extends StatelessWidget {
             _ListItem(
               icon: Icons.watch_later_outlined,
               label: 'Orders history',
-              trailing: state.ordersCount?.let((it) => _Badge(value: it)),
-              onPressed: () {},
+              trailing: state.orders?.let((it) => _Badge(value: it.length)),
+              onPressed: () => OrdersHistoryRoute($extra: state.orders).go(context),
             ),
             _ListItem(
               icon: Icons.favorite_outline,
               label: 'Favorites',
-              trailing: state.favoritesCount?.let((it) => _Badge(value: it)),
+              trailing: state.favoriteProducts?.let((it) => _Badge(value: it.length)),
               onPressed: () {},
             ),
             const Spacer(),
@@ -188,10 +188,11 @@ class _ListItem extends StatelessWidget {
             ),
             const Gap.h(16),
             Expanded(
-                child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyLarge,
-            )),
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
             if (trailing != null) ...[
               const Gap.h(16),
               trailing!,
