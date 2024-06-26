@@ -9,6 +9,7 @@ import 'presentation/catalog/providers/product_list/product_list_provider.dart';
 import 'presentation/catalog_filter/providers/catalog_filter_provider/catalog_filter_provider.dart';
 import 'presentation/catalog_filter/providers/catalog_filters_data_provider/catalog_filters_data_provider.dart';
 import 'presentation/catalog_filter/providers/product_categories_provider.dart';
+import 'presentation/common_providers/products_by_ids_provider.dart';
 import 'presentation/product_details/providers/product_details_provider.dart';
 
 class CatalogRegistrar implements IRegistrar {
@@ -36,6 +37,11 @@ class CatalogRegistrar implements IRegistrar {
     registerFactoryDependency(CatalogNotifier.new);
     registerFactoryDependency(
       () => ProductDetailsNotifier(
+        catalogService: resolveDependency(),
+      ),
+    );
+    registerFactoryDependency(
+      () => ProductsByIdsNotifier(
         catalogService: resolveDependency(),
       ),
     );

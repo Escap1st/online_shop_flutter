@@ -8,6 +8,8 @@ import 'repositories/product_repository.dart';
 abstract interface class ICatalogService {
   Future<PagedResponse<Product>> getProducts({required int offset, required int limit});
 
+  Future<List<Product>> getProductsByIds({required List<int> productsIds});
+
   Future<Product> getProduct({required int productId});
 
   Future<List<ProductCategory>> getCategories();
@@ -34,6 +36,17 @@ class CatalogService implements ICatalogService {
           )
           .toList(),
     );
+  }
+
+  @override
+  Future<List<Product>> getProductsByIds({required List<int> productsIds}) async {
+    final result = <Product>[];
+    for (final id in productsIds) {
+      result.add(
+        await getProduct(productId: id),
+      );
+    }
+    return result;
   }
 
   @override

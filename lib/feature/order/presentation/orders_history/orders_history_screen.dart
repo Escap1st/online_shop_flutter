@@ -1,30 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../shared/presentation/widgets/order_summary.dart';
+import '../../../../shared/presentation/widgets/screen_error_widget.dart';
+import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
+import '../../../catalog/domain/entities/product.dart';
+import '../../../catalog/presentation/common_providers/products_by_ids_params.dart';
+import '../../../catalog/presentation/common_providers/products_by_ids_provider.dart';
 import '../../domain/entities/order.dart';
 
-class OrdersHistoryScreen extends StatelessWidget {
+class OrdersHistoryScreen extends ConsumerWidget {
   const OrdersHistoryScreen({super.key, required this.orders});
 
   final List<Order>? orders;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final productIds = orders!.fold(
+      <int>{},
+      (previousValue, element) => previousValue
+        ..addAll(
+          element.entries.map((e) => e.productId).toList(),
+        ),
+    ).toList();
+    final providerParams = ProductByIdsParams(ids: productIds);
+    final provider = productsByIdsProvider(providerParams);
+    final productsState = ref.watch(provider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Orders history'),
       ),
       body: SafeArea(
-        child: _Loaded(orders: orders!),
+        // TODO: load explicitly if null
+        child: switch (productsState) {
+          AsyncData(:final value) => _Loaded(orders: orders!, products: value),
+          AsyncLoading() => const ScreenLoadingWidget(),
+          AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
+              error: error,
+              stackTrace: stackTrace,
+              onRetry: () => ref.invalidate(provider),
+              isRetrying: productsState.isRefreshing,
+            ),
+          _ => const SizedBox.shrink(),
+        },
       ),
     );
   }
 }
 
 class _Loaded extends StatefulWidget {
-  const _Loaded({required this.orders, super.key});
+  const _Loaded({required this.orders, required this.products, super.key});
 
   final List<Order> orders;
+  final List<Product> products;
 
   @override
   State<_Loaded> createState() => _LoadedState();
@@ -50,7 +80,15 @@ class _LoadedState extends State<_Loaded> {
                     ),
                   );
                 },
-                body: const SizedBox(),
+                body: OrderSummary(
+                  order: e,
+                  products: widget.products
+                      .where(
+                        (p) => e.entries.map((orderEntry) => orderEntry.productId).contains(p.id),
+                      )
+                      .toList(),
+                  shrinkWrap: true,
+                ),
               ),
             )
             .toList(),
