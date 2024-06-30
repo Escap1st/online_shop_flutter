@@ -10,6 +10,7 @@ import '../../../../shared/presentation/widgets/order_summary.dart';
 import '../../../cart/presentation/cart/providers/cart/cart_provider.dart';
 import '../../domain/entities/order.dart';
 import '../../domain/entities/order_entry.dart';
+import '../common_providers/orders_provider.dart';
 import '../delivery_details/providers/delivery_details_provider.dart';
 import 'providers/order_confirmation_provider.dart';
 
@@ -38,7 +39,7 @@ class OrderConfirmationScreen extends ConsumerWidget {
     ref.listen(
       confirmationProvider,
       (previous, next) {
-        if (next is AsyncData && next.requireValue) {
+        if (next case AsyncData(:final value) when value) {
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -84,7 +85,10 @@ class OrderConfirmationScreen extends ConsumerWidget {
               child: KitButton(
                 label: 'Confirm',
                 isLoading: confirmationState is AsyncLoading,
-                onPressed: ref.read(confirmationProvider.notifier).confirm,
+                onPressed: () {
+                  ref.read(confirmationProvider.notifier).confirm();
+                  ref.invalidate(ordersProvider);
+                },
               ),
             ),
           ],

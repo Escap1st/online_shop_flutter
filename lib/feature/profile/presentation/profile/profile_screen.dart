@@ -11,6 +11,7 @@ import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../../authentication/presentation/common_providers/check_authentication_provider.dart';
 import '../../../authentication/presentation/common_providers/log_out_provider.dart';
+import '../../../order/presentation/common_providers/orders_provider.dart';
 import 'providers/profile_overview_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -96,14 +97,15 @@ class _Authenticated extends ConsumerWidget {
   }
 }
 
-class _Loaded extends StatelessWidget {
+class _Loaded extends ConsumerWidget {
   const _Loaded({required this.state, super.key});
 
   final ProfileOverviewState state;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final ordersState = ref.watch(ordersProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -132,13 +134,17 @@ class _Loaded extends StatelessWidget {
             _ListItem(
               icon: Icons.watch_later_outlined,
               label: 'Orders history',
-              trailing: state.orders?.let((it) => _Badge(value: it.length)),
-              onPressed: () => OrdersHistoryRoute($extra: state.orders).go(context),
+              trailing: switch (ordersState) {
+                AsyncData(:final value) => _Badge(value: value.length),
+                _ => null,
+              },
+              onPressed: () => const OrdersHistoryRoute().go(context),
             ),
             _ListItem(
               icon: Icons.favorite_outline,
               label: 'Favorites',
-              trailing: state.favoriteProducts?.let((it) => _Badge(value: it.length)),
+              // TODO: get favorites
+              trailing: [].let((it) => _Badge(value: it.length)),
               onPressed: () {},
             ),
             const Spacer(),

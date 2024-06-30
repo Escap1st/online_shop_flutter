@@ -1,29 +1,32 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/di/dependencies.dart';
 import '../../../../domain/authentication_service.dart';
 
-final signInGoogleProvider =
-    StateNotifierProvider.autoDispose<SignInGoogleNotifier, AsyncValue<bool>>(
-  (ref) => resolveDependency(),
+final signInGoogleProvider = AsyncNotifierProvider.autoDispose<SignInGoogleNotifier, bool>(
+  resolveDependency,
 );
 
-class SignInGoogleNotifier extends StateNotifier<AsyncValue<bool>> {
+class SignInGoogleNotifier extends AutoDisposeAsyncNotifier<bool> {
   SignInGoogleNotifier({
     required IAuthenticationService authenticationService,
-  })  : _authenticationService = authenticationService,
-        super(const AsyncData(false));
+  }) : _authenticationService = authenticationService;
 
   final IAuthenticationService _authenticationService;
+
+  @override
+  FutureOr<bool> build() {
+    return false;
+  }
 
   Future<void> signIn() async {
     state = const AsyncLoading();
 
-    try {
+    state = await AsyncValue.guard(() async {
       await _authenticationService.signInGoogle();
-      state = const AsyncData(true);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
+      return true;
+    });
   }
 }

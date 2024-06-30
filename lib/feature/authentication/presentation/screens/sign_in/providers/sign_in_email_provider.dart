@@ -1,35 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../core/di/dependencies.dart';
 import '../../../../domain/authentication_service.dart';
 import '../../../../domain/entities/sign_in_email_params.dart';
 
-final signInEmailProvider =
-    StateNotifierProvider.autoDispose<SignInEmailNotifier, AsyncValue<bool>>(
-  (ref) => resolveDependency(),
+final signInEmailProvider = AsyncNotifierProvider.autoDispose<SignInEmailNotifier, bool>(
+  resolveDependency,
 );
 
-class SignInEmailNotifier extends StateNotifier<AsyncValue<bool>> {
+class SignInEmailNotifier extends AutoDisposeAsyncNotifier<bool> {
   SignInEmailNotifier({
     required IAuthenticationService authenticationService,
-  })  : _authenticationService = authenticationService,
-        super(const AsyncData(false));
+  }) : _authenticationService = authenticationService;
 
   final IAuthenticationService _authenticationService;
+
+  @override
+  FutureOr<bool> build() {
+    return false;
+  }
 
   Future<void> signIn({required String email, required String password}) async {
     state = const AsyncLoading();
 
-    try {
+    state = await AsyncValue.guard(() async {
       await _authenticationService.signInEmail(
-            params: SignInEmailParams(
-              email: email,
-              password: password,
-            ),
-          );
-      state = const AsyncData(true);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
+        params: SignInEmailParams(
+          email: email,
+          password: password,
+        ),
+      );
+      return true;
+    });
   }
 }

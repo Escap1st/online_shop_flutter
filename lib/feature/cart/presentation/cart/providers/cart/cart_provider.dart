@@ -8,27 +8,27 @@ import '../../../../domain/entities/cart.dart';
 
 part 'cart_state.dart';
 
-final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
-  return resolveDependency();
-});
+final cartProvider = NotifierProvider<CartNotifier, CartState>(
+  resolveDependency,
+);
 
-class CartNotifier extends StateNotifier<CartState> {
-  CartNotifier({required ICartService cartService})
-      : _cartService = cartService,
-        super(
-          const CartLoaded(
-            cart: Cart(positions: {}),
-          ),
-        ) {
-    load();
-  }
+class CartNotifier extends Notifier<CartState> {
+  CartNotifier({required ICartService cartService}) : _cartService = cartService;
 
   final ICartService _cartService;
+
+  @override
+  CartLoaded build() {
+    load();
+    return const CartLoaded(
+      cart: Cart(positions: {}),
+    );
+  }
 
   Future<void> load() async {
     try {
       state = CartLoaded(cart: await _cartService.getCart());
-    } catch (e, st){
+    } catch (e, st) {
       state = CartFailed(
         cart: state.cart,
         exception: e,

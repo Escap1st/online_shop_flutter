@@ -1,46 +1,29 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/di/dependencies.dart';
 import '../../../../authentication/domain/authentication_service.dart';
-import '../../../../catalog/domain/entities/product.dart';
-import '../../../../order/domain/entities/order.dart';
-import '../../../../order/domain/order_service.dart';
 
 part 'profile_overview_state.dart';
 
 final profileOverviewProvider =
-    StateNotifierProvider<ProfileOverviewNotifier, AsyncValue<ProfileOverviewState>>(
-  (ref) => resolveDependency(),
+    AsyncNotifierProvider<ProfileOverviewNotifier, ProfileOverviewState>(
+  resolveDependency,
 );
 
-class ProfileOverviewNotifier extends StateNotifier<AsyncValue<ProfileOverviewState>> {
+class ProfileOverviewNotifier extends AsyncNotifier<ProfileOverviewState> {
   ProfileOverviewNotifier({
     required IAuthenticationService authenticationService,
-    required IOrderService orderService,
-  })  : _authenticationService = authenticationService,
-        _orderService = orderService,
-        super(const AsyncLoading()) {
-    load();
-  }
+  }) : _authenticationService = authenticationService;
 
   final IAuthenticationService _authenticationService;
-  final IOrderService _orderService;
 
-  Future<void> load() async {
-    state = const AsyncLoading();
-
-    state = await AsyncValue.guard(() async {
-      return ProfileOverviewState(login: await _authenticationService.getLogin());
-    });
-
-    if (state is AsyncData) {
-      await AsyncValue.guard(() async {
-        final orders = await _orderService.getOrders();
-        state = AsyncData(
-          state.value!.copyWith(orders: orders),
-        );
-      });
-    }
+  @override
+  FutureOr<ProfileOverviewState> build() async {
+    return ProfileOverviewState(
+      login: await _authenticationService.getLogin(),
+    );
   }
 }

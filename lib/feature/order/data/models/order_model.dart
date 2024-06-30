@@ -22,6 +22,7 @@ class OrderModel {
   final String? orderId;
   final List<OrderEntryModel> entries;
   final OrderDeliveryDetailsModel details;
+  @JsonKey(name: Constants.orderDateTimeField)
   final String dateTime;
   @JsonKey(name: Constants.orderUserIdField)
   final String userId;

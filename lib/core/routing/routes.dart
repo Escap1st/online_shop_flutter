@@ -11,7 +11,6 @@ import '../../feature/catalog/domain/entities/product.dart';
 import '../../feature/catalog/presentation/catalog/catalog_screen.dart';
 import '../../feature/catalog/presentation/catalog_filter/catalog_filter_screen.dart';
 import '../../feature/catalog/presentation/product_details/product_details_screen.dart';
-import '../../feature/order/domain/entities/order.dart';
 import '../../feature/order/presentation/delivery_details/delivery_details_screen.dart';
 import '../../feature/order/presentation/order_confirmation/order_confirmation_screen.dart';
 import '../../feature/order/presentation/orders_history/orders_history_screen.dart';
@@ -206,14 +205,12 @@ class DeliveryDetailsRoute extends GoRouteData {
 }
 
 class OrdersHistoryRoute extends GoRouteData {
-  OrdersHistoryRoute({required this.$extra});
-
-  final List<Order>? $extra;
+  const OrdersHistoryRoute();
 
   static final $parentNavigatorKey = rootNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return OrdersHistoryScreen(orders: $extra);
+    return const OrdersHistoryScreen();
   }
 }

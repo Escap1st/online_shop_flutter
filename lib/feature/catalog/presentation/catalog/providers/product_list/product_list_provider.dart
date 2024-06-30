@@ -7,20 +7,22 @@ import '../../../../domain/entities/product.dart';
 
 part 'product_list_state.dart';
 
-final productListProvider = StateNotifierProvider<ProductListNotifier, ProductListState>(
-  (ref) => resolveDependency(),
+final productListProvider = NotifierProvider<ProductListNotifier, ProductListState>(
+  resolveDependency,
 );
 
-class ProductListNotifier extends StateNotifier<ProductListState> {
-  ProductListNotifier({required ICatalogService catalogService})
-      : _catalogService = catalogService,
-        super(const ProductListInitial()) {
-    load();
-  }
+class ProductListNotifier extends Notifier<ProductListState> {
+  ProductListNotifier({required ICatalogService catalogService}) : _catalogService = catalogService;
 
   static const _kLimit = 30;
 
   final ICatalogService _catalogService;
+
+  @override
+  ProductListState build() {
+    load();
+    return const ProductListInitial();
+  }
 
   Future<void> load() async {
     state = const ProductListLoading();

@@ -45,10 +45,13 @@ class _Loaded extends StatelessWidget {
     return cart.positions.isNotEmpty
         ? _LoadedNonEmpty(cart: cart)
         : Center(
-            child: Text(
-              'Cart is empty.\nPlease, go to the catalog and add items to perform purchase',
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Cart is empty.\nPlease, go to the catalog and add items to perform purchase',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
             ),
           );
   }

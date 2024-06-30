@@ -6,13 +6,15 @@ import '../../../../domain/entities/product_category.dart';
 
 part 'catalog_filter_state.dart';
 
-final catalogFilterProvider =
-    StateNotifierProvider<CatalogFilterNotifier, CatalogFilterState>((ref) {
-  return resolveDependency();
-});
+final catalogFilterProvider = NotifierProvider<CatalogFilterNotifier, CatalogFilterState>(
+  resolveDependency,
+);
 
-class CatalogFilterNotifier extends StateNotifier<CatalogFilterState> {
-  CatalogFilterNotifier() : super(const CatalogFilterState());
+class CatalogFilterNotifier extends Notifier<CatalogFilterState> {
+  @override
+  CatalogFilterState build() {
+    return const CatalogFilterState();
+  }
 
   void toggleCategory(ProductCategory category) {
     final newCategories = List.of(state.selectedCategories);

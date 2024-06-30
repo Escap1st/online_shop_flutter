@@ -29,6 +29,7 @@ class OrderRepository implements IOrderRepository {
     final ordersSnapshot = await _firestore
         .collection(Constants.ordersCollection)
         .where(Constants.orderUserIdField, isEqualTo: userId)
+        .orderBy(Constants.orderDateTimeField, descending: true)
         .get();
 
     return ordersSnapshot.docs.map((e) {
