@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import '../../../shared/domain/entities/paged_response.dart';
 import 'entities/product.dart';
 import 'entities/product_category.dart';
+import 'entities/product_review.dart';
 import 'repositories/product_repository.dart';
 
 abstract interface class ICatalogService {
@@ -13,6 +14,8 @@ abstract interface class ICatalogService {
   Future<Product> getProduct({required int productId});
 
   Future<List<ProductCategory>> getCategories();
+
+  Future<List<ProductReview>> getReviews(int productId);
 }
 
 class CatalogService implements ICatalogService {
@@ -55,4 +58,17 @@ class CatalogService implements ICatalogService {
 
   @override
   Future<List<ProductCategory>> getCategories() => _productRepository.getCategories();
+
+  @override
+  Future<List<ProductReview>> getReviews(int productId) async {
+    final reviews = await _productRepository.getReviews(productId);
+    for (var i = 0; i < reviews.length; i++) {
+      reviews[i] = reviews[i].copyWith(
+        photos: await _productRepository.getReviewPhotos(
+          reviews[i].id,
+        ),
+      );
+    }
+    return reviews;
+  }
 }

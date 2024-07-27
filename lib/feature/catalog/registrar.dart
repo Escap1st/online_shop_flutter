@@ -1,6 +1,7 @@
 import '../../core/di/dependencies.dart';
 import '../../core/di/registrar.dart';
 import 'data/api_clients/product_api_client.dart';
+import 'data/api_clients/product_review_api_client.dart';
 import 'data/repositories/product_repository.dart';
 import 'domain/catalog_service.dart';
 import 'domain/repositories/product_repository.dart';
@@ -18,8 +19,14 @@ class CatalogRegistrar implements IRegistrar {
     registerLazySingletonDependency<IProductApiClient>(
       () => IProductApiClient(resolveDependency()),
     );
+    registerLazySingletonDependency<IProductReviewApiClient>(
+      () => ProductReviewApiClient(client: resolveDependency()),
+    );
     registerLazySingletonDependency<IProductRepository>(
-      () => ProductRepository(productApiClient: resolveDependency()),
+      () => ProductRepository(
+        productApiClient: resolveDependency(),
+        productReviewApiClient: resolveDependency(),
+      ),
     );
     registerLazySingletonDependency<ICatalogService>(
       () => CatalogService(productRepository: resolveDependency()),
