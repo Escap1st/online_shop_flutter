@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
 import '../../../../shared/presentation/widgets/kit_button.dart';
 import '../../../../shared/presentation/widgets/measure_size_widget.dart';
@@ -42,9 +43,8 @@ class ProductDetailsScreen extends StatelessWidget {
             ? _Loaded(product: product!)
             : Consumer(
                 builder: (context, ref, child) {
-                  final productState = ref.watch(
-                    productDetailsProvider(productId),
-                  );
+                  final provider = productDetailsProvider(productId);
+                  final productState = ref.watch(provider);
 
                   return switch (productState) {
                     AsyncData(:final value) => _Loaded(product: value),
@@ -52,7 +52,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
                         error: error,
                         stackTrace: stackTrace,
-                        onRetry: () => ref.invalidate(productDetailsProvider(productId)),
+                        onRetry: () => ref.invalidate(provider),
                         isRetrying: productState.isRefreshing,
                       ),
                     _ => const SizedBox.shrink(),
@@ -122,6 +122,28 @@ class _LoadedState extends State<_Loaded> {
                     ),
                   ],
                   const Gap.v(16),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, size: 20),
+                      const Gap.h(8),
+                      Text('${widget.product.rating.toStringAsFixed(2)} / 5'),
+                      const Spacer(),
+                      InkWell(
+                        onTap: () => ProductReviewsRoute(
+                          productId: widget.product.id,
+                          productName: widget.product.title,
+                        ).go(context),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.rate_review_outlined, size: 20),
+                            Gap.h(8),
+                            Text('Reviews'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                   const Gap.v(16),
                   Text(widget.product.description),
                 ],

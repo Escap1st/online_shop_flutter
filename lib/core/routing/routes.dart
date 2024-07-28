@@ -11,6 +11,7 @@ import '../../feature/catalog/domain/entities/product.dart';
 import '../../feature/catalog/presentation/catalog/catalog_screen.dart';
 import '../../feature/catalog/presentation/catalog_filter/catalog_filter_screen.dart';
 import '../../feature/catalog/presentation/product_details/product_details_screen.dart';
+import '../../feature/catalog/presentation/product_reviews/product_reviews_screen.dart';
 import '../../feature/order/presentation/delivery_details/delivery_details_screen.dart';
 import '../../feature/order/presentation/order_confirmation/order_confirmation_screen.dart';
 import '../../feature/order/presentation/orders_history/orders_history_screen.dart';
@@ -32,6 +33,11 @@ final _profileNavigatorKey = GlobalKey<NavigatorState>();
           routes: [
             TypedGoRoute<ProductDetailsRoute>(
               path: 'product/:productId',
+              routes: [
+                TypedGoRoute<ProductReviewsRoute>(
+                  path: 'reviews',
+                ),
+              ],
             ),
             TypedGoRoute<CatalogFilterRoute>(
               path: 'catalog_filter',
@@ -130,6 +136,24 @@ class ProductDetailsRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return ProductDetailsScreen(product: $extra, productId: productId);
+  }
+}
+
+class ProductReviewsRoute extends GoRouteData {
+  const ProductReviewsRoute({
+    required this.productId,
+    this.productName,
+  });
+
+  final int productId;
+  final String? productName;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return ProductReviewsScreen(
+      productId: productId,
+      productName: productName,
+    );
   }
 }
 

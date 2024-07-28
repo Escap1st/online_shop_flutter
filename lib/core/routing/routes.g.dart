@@ -24,6 +24,12 @@ RouteBase get $mainRoute => StatefulShellRouteData.$route(
                 GoRouteData.$route(
                   path: 'product/:productId',
                   factory: $ProductDetailsRouteExtension._fromState,
+                  routes: [
+                    GoRouteData.$route(
+                      path: 'reviews',
+                      factory: $ProductReviewsRouteExtension._fromState,
+                    ),
+                  ],
                 ),
                 GoRouteData.$route(
                   path: 'catalog_filter',
@@ -125,6 +131,30 @@ extension $ProductDetailsRouteExtension on ProductDetailsRoute {
 
   void replace(BuildContext context) =>
       context.replace(location, extra: $extra);
+}
+
+extension $ProductReviewsRouteExtension on ProductReviewsRoute {
+  static ProductReviewsRoute _fromState(GoRouterState state) =>
+      ProductReviewsRoute(
+        productId: int.parse(state.pathParameters['productId']!),
+        productName: state.uri.queryParameters['product-name'],
+      );
+
+  String get location => GoRouteData.$location(
+        '/catalog/product/${Uri.encodeComponent(productId.toString())}/reviews',
+        queryParams: {
+          if (productName != null) 'product-name': productName,
+        },
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
 }
 
 extension $CatalogFilterRouteExtension on CatalogFilterRoute {

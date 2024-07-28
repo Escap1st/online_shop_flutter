@@ -15,7 +15,7 @@ abstract interface class ICatalogService {
 
   Future<List<ProductCategory>> getCategories();
 
-  Future<List<ProductReview>> getReviews(int productId);
+  Future<List<ProductReview>> getReviews({required int productId});
 }
 
 class CatalogService implements ICatalogService {
@@ -60,7 +60,7 @@ class CatalogService implements ICatalogService {
   Future<List<ProductCategory>> getCategories() => _productRepository.getCategories();
 
   @override
-  Future<List<ProductReview>> getReviews(int productId) async {
+  Future<List<ProductReview>> getReviews({required int productId}) async {
     final reviews = await _productRepository.getReviews(productId);
     for (var i = 0; i < reviews.length; i++) {
       reviews[i] = reviews[i].copyWith(

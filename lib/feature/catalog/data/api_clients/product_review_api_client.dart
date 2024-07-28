@@ -46,7 +46,7 @@ class ProductReviewApiClient implements IProductReviewApiClient {
 
     final response = await _client.query(options);
     return [
-      ProductReviewModel.fromJson(response.data!),
+      ProductReviewModel.fromJson(response.data!['post'] as Map<String, dynamic>),
     ];
   }
 
@@ -74,6 +74,6 @@ class ProductReviewApiClient implements IProductReviewApiClient {
     );
 
     final result = await _client.query(options);
-    return ProductReviewAlbumModel.fromJson(result.data!);
+    return ProductReviewAlbumModel.fromJson(result.data!['album'] as Map<String, dynamic>);
   }
 }

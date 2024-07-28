@@ -12,6 +12,7 @@ import 'presentation/catalog_filter/providers/catalog_filters_data_provider/cata
 import 'presentation/catalog_filter/providers/product_categories_provider.dart';
 import 'presentation/common_providers/products_by_ids_provider.dart';
 import 'presentation/product_details/providers/product_details_provider.dart';
+import 'presentation/product_reviews/providers/product_reviews_provider.dart';
 
 class CatalogRegistrar implements IRegistrar {
   @override
@@ -44,6 +45,11 @@ class CatalogRegistrar implements IRegistrar {
     registerFactoryDependency(CatalogNotifier.new);
     registerFactoryDependency(
       () => ProductDetailsNotifier(
+        catalogService: resolveDependency(),
+      ),
+    );
+    registerFactoryDependency(
+      () => ProductReviewsNotifier(
         catalogService: resolveDependency(),
       ),
     );
