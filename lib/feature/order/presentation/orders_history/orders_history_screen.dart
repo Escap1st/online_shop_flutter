@@ -91,7 +91,7 @@ class _LoadedState extends ConsumerState<_Loaded> {
           padding: const EdgeInsets.all(16),
           child: Text(
             'You have not ordered anything yet',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
         ),
