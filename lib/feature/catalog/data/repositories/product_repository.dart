@@ -7,12 +7,14 @@ import '../../../../shared/domain/entities/paged_response.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_category.dart';
 import '../../domain/entities/product_review.dart';
+import '../../domain/entities/product_review_comment.dart';
 import '../../domain/entities/product_review_photo.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../api_clients/product_api_client.dart';
 import '../api_clients/product_review_api_client.dart';
 import '../mappers/product_category_mapper.dart';
 import '../mappers/product_mapper.dart';
+import '../mappers/product_review_comment_mapper.dart';
 import '../mappers/product_review_mapper.dart';
 import '../mappers/product_review_photo_mapper.dart';
 import '../mappers/products_paged_response_mapper.dart';
@@ -70,5 +72,43 @@ class ProductRepository implements IProductRepository {
   Future<List<ProductReviewPhoto>> getReviewPhotos(String reviewId) async {
     final albumModel = await _productReviewApiClient.getReviewAlbum(reviewId);
     return albumModel.photos.data.map(ProductReviewPhotoMapper().toEntity).toList();
+  }
+
+  @override
+  Future<ProductReviewComment> addComment(int reviewId, ProductReviewComment comment) async {
+    final mapper = ProductReviewCommentMapper();
+    final requestModel = mapper.fromEntity(comment);
+    final responseModel = await _productReviewApiClient.addComment(reviewId, requestModel);
+    return mapper.toEntity(responseModel);
+  }
+
+  @override
+  Future<ProductReview> addReview(int productId, ProductReview review) async {
+    final mapper = ProductReviewMapper();
+    final requestModel = mapper.fromEntity(review);
+    final responseModel = await _productReviewApiClient.addReview(productId, requestModel);
+    return mapper.toEntity(responseModel);
+  }
+
+  @override
+  Future<void> deleteComment(int commentId) => _productReviewApiClient.deleteComment(commentId);
+
+  @override
+  Future<void> deleteReview(int reviewId) => _productReviewApiClient.deleteReview(reviewId);
+
+  @override
+  Future<ProductReviewComment> updateComment(ProductReviewComment comment) async {
+    final mapper = ProductReviewCommentMapper();
+    final requestModel = mapper.fromEntity(comment);
+    final responseModel = await _productReviewApiClient.updateComment(requestModel);
+    return mapper.toEntity(responseModel);
+  }
+
+  @override
+  Future<ProductReview> updateReview(ProductReview review) async {
+    final mapper = ProductReviewMapper();
+    final requestModel = mapper.fromEntity(review);
+    final responseModel = await _productReviewApiClient.updateReview(requestModel);
+    return mapper.toEntity(responseModel);
   }
 }

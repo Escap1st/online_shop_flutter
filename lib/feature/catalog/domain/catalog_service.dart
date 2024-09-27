@@ -4,6 +4,7 @@ import '../../../shared/domain/entities/paged_response.dart';
 import 'entities/product.dart';
 import 'entities/product_category.dart';
 import 'entities/product_review.dart';
+import 'entities/product_review_comment.dart';
 import 'repositories/product_repository.dart';
 
 abstract interface class ICatalogService {
@@ -16,6 +17,18 @@ abstract interface class ICatalogService {
   Future<List<ProductCategory>> getCategories();
 
   Future<List<ProductReview>> getReviews({required int productId});
+
+  Future<ProductReview> addReview(int productId, ProductReview review);
+
+  Future<ProductReview> updateReview(ProductReview review);
+
+  Future<void> deleteReview(int reviewId);
+
+  Future<ProductReviewComment> addComment(int reviewId, ProductReviewComment comment);
+
+  Future<ProductReviewComment> updateComment(ProductReviewComment comment);
+
+  Future<void> deleteComment(int commentId);
 }
 
 class CatalogService implements ICatalogService {
@@ -71,4 +84,26 @@ class CatalogService implements ICatalogService {
     }
     return reviews;
   }
+
+  @override
+  Future<ProductReviewComment> addComment(int reviewId, ProductReviewComment comment) =>
+      _productRepository.addComment(reviewId, comment);
+
+  @override
+  Future<ProductReview> addReview(int productId, ProductReview review) =>
+      _productRepository.addReview(productId, review);
+
+  @override
+  Future<void> deleteComment(int commentId) => _productRepository.deleteComment(commentId);
+
+  @override
+  Future<void> deleteReview(int reviewId) => _productRepository.deleteReview(reviewId);
+
+  @override
+  Future<ProductReviewComment> updateComment(ProductReviewComment comment) =>
+      _productRepository.updateComment(comment);
+
+  @override
+  Future<ProductReview> updateReview(ProductReview review) =>
+      _productRepository.updateReview(review);
 }

@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/iterable.dart';
 import '../../../../shared/presentation/widgets/gap.dart';
+import '../../../../shared/presentation/widgets/kit_button.dart';
 import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../domain/entities/product_review.dart';
@@ -23,7 +23,17 @@ class ProductReviewsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reviews${productName?.let((it) => ' - $it') ?? ''}'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Reviews'),
+            if (productName != null)
+              Text(
+                productName!,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+          ],
+        ),
       ),
       body: switch (reviewsState) {
         AsyncData(:final value) => _Loaded(value),
@@ -71,70 +81,91 @@ class _LoadedState extends State<_Loaded> {
     }
 
     return SingleChildScrollView(
-      child: ExpansionPanelList(
-        children: widget.reviews
-            .map(
-              (e) => ExpansionPanel(
-                isExpanded: _expandedItems.contains(e.id),
-                headerBuilder: (context, expanded) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ExpansionPanelList(
+            children: widget.reviews
+                .map(
+                  (e) => ExpansionPanel(
+                    isExpanded: _expandedItems.contains(e.id),
+                    headerBuilder: (context, expanded) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
                           children: [
-                            ClipOval(
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 48,
-                                width: 48,
-                                color: theme.colorScheme.secondaryContainer,
-                                child: Text(
-                                  e.user.username[0].toUpperCase(),
-                                  style: textTheme.headlineMedium,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipOval(
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    height: 48,
+                                    width: 48,
+                                    color: theme.colorScheme.secondaryContainer,
+                                    child: Text(
+                                      e.user.username[0].toUpperCase(),
+                                      style: textTheme.headlineMedium,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const Gap.h(16),
+                                Expanded(
+                                  child: Text(
+                                    e.title,
+                                    style: textTheme.titleMedium,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const Gap.h(16),
-                            Expanded(
-                              child: Text(
-                                e.title,
-                                style: textTheme.titleMedium,
-                              ),
+                            const Gap.v(16),
+                            Text(
+                              e.body,
+                              style: textTheme.bodyLarge,
                             ),
+                            const Gap.v(16),
+                            Row(
+                              children: e.photos
+                                  .take(3)
+                                  .map<Widget>(
+                                    (photo) => Expanded(
+                                      child: CachedNetworkImage(imageUrl: photo.thumbnailUrl),
+                                    ),
+                                  )
+                                  .separate(const Gap.h(8))
+                                  .toList(),
+                            )
                           ],
                         ),
-                        const Gap.v(16),
-                        Text(
-                          e.body,
-                          style: textTheme.bodyLarge,
-                        ),
-                        const Gap.v(16),
-                        Row(
-                          children: e.photos
-                              .take(3)
-                              .map<Widget>(
-                                (photo) => Expanded(
-                                  child: CachedNetworkImage(imageUrl: photo.thumbnailUrl),
-                                ),
-                              )
-                              .separate(const Gap.h(8))
-                              .toList(),
-                        )
-                      ],
-                    ),
-                  );
-                },
-                body: _Comments(e.comments),
-              ),
-            )
-            .toList(),
-        expansionCallback: (index, isExpanded) {
-          final id = widget.reviews[index].id;
-          setState(() => isExpanded ? _expandedItems.add(id) : _expandedItems.remove(id));
-        },
-        expandedHeaderPadding: EdgeInsets.zero,
+                      );
+                    },
+                    body: _Comments(e.comments),
+                  ),
+                )
+                .toList(),
+            expansionCallback: (index, isExpanded) {
+              final id = widget.reviews[index].id;
+              setState(() => isExpanded ? _expandedItems.add(id) : _expandedItems.remove(id));
+            },
+            expandedHeaderPadding: EdgeInsets.zero,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: KitButton(
+              label: 'Add review',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => _EditReviewDialog(
+                    onSubmit: (title, body) {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -150,35 +181,159 @@ class _Comments extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Column(
-      children: comments
-          .map(
-            (e) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.only(left: 48, right: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Gap.v(8),
-                      Text(
-                        e.name,
-                        style: textTheme.titleMedium,
-                      ),
-                      const Gap.v(8),
-                      Text(
-                        e.body,
-                        style: textTheme.bodyLarge,
-                      ),
-                      const Gap.v(8),
-                    ],
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ...comments
+            .map(
+              (e) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 48, right: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Gap.v(8),
+                        Text(
+                          e.name,
+                          style: textTheme.titleMedium,
+                        ),
+                        const Gap.v(8),
+                        Text(
+                          e.body,
+                          style: textTheme.bodyLarge,
+                        ),
+                        const Gap.v(8),
+                      ],
+                    ),
                   ),
+                ],
+              ),
+            )
+            .toList(),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: KitButton(
+            label: 'Add comment',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => _EditCommentDialog(
+                  onSubmit: (body) {
+                    Navigator.of(context).pop();
+                  },
                 ),
-              ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EditReviewDialog extends StatefulWidget {
+  const _EditReviewDialog({required this.onSubmit, super.key});
+
+  final void Function(String, String) onSubmit;
+
+  @override
+  State<_EditReviewDialog> createState() => _EditReviewDialogState();
+}
+
+class _EditReviewDialogState extends State<_EditReviewDialog> {
+  late final _titleController = TextEditingController();
+  late final _bodyController = TextEditingController();
+  late final _bodyFocus = FocusNode();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    _bodyFocus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      insetPadding: const EdgeInsets.all(24),
+      content: SizedBox(
+        width: MediaQuery.sizeOf(context).width - 48,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              autofocus: true,
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: 'Enter title'),
+              onFieldSubmitted: (_) => _bodyFocus.requestFocus(),
+              textInputAction: TextInputAction.next,
             ),
-          )
-          .toList(),
+            TextFormField(
+              controller: _bodyController,
+              focusNode: _bodyFocus,
+              decoration: const InputDecoration(labelText: 'Enter details'),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        KitButton(
+          label: 'Cancel',
+          onPressed: Navigator.of(context).pop,
+        ),
+        KitButton(
+          label: 'Submit',
+          onPressed: () => widget.onSubmit(_titleController.text, _bodyController.text),
+        ),
+      ],
+    );
+  }
+}
+
+class _EditCommentDialog extends StatefulWidget {
+  const _EditCommentDialog({required this.onSubmit, super.key});
+
+  final void Function(String) onSubmit;
+
+  @override
+  State<_EditCommentDialog> createState() => _EditCommentDialogState();
+}
+
+class _EditCommentDialogState extends State<_EditCommentDialog> {
+  late final _bodyController = TextEditingController();
+
+  @override
+  void dispose() {
+    _bodyController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      insetPadding: const EdgeInsets.all(24),
+      content: SizedBox(
+        width: MediaQuery.sizeOf(context).width - 48,
+        child: TextFormField(
+          autofocus: true,
+          controller: _bodyController,
+          decoration: const InputDecoration(labelText: 'Enter comment'),
+        ),
+      ),
+      actions: [
+        KitButton(
+          label: 'Cancel',
+          onPressed: Navigator.of(context).pop,
+        ),
+        KitButton(
+          label: 'Submit',
+          onPressed: () => widget.onSubmit(_bodyController.text),
+        ),
+      ],
     );
   }
 }
