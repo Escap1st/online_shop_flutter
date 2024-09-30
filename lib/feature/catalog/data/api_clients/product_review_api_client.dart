@@ -3,23 +3,37 @@ import 'package:graphql/client.dart';
 import '../models/product_review_album_model.dart';
 import '../models/product_review_comment_model.dart';
 import '../models/product_review_model.dart';
+import '../models/set_product_review_comment_request_model.dart';
+import '../models/set_product_review_request_model.dart';
 
 abstract interface class IProductReviewApiClient {
   Future<List<ProductReviewModel>> getReviews(int productId);
 
   Future<ProductReviewAlbumModel> getReviewAlbum(String reviewId);
 
-  Future<ProductReviewModel> addReview(int productId, ProductReviewModel review);
+  Future<ProductReviewModel> addReview(
+    int productId,
+    SetProductReviewRequestModel request,
+  );
 
-  Future<ProductReviewModel> updateReview(ProductReviewModel review);
+  Future<ProductReviewModel> updateReview(
+    String reviewId,
+    SetProductReviewRequestModel request,
+  );
 
-  Future<void> deleteReview(int reviewId);
+  Future<void> deleteReview(String reviewId);
 
-  Future<ProductReviewCommentModel> addComment(int reviewId, ProductReviewCommentModel comment);
+  Future<ProductReviewCommentModel> addComment(
+    String reviewId,
+    SetProductReviewCommentRequestModel request,
+  );
 
-  Future<ProductReviewCommentModel> updateComment(ProductReviewCommentModel comment);
+  Future<ProductReviewCommentModel> updateComment(
+    String commentId,
+    SetProductReviewCommentRequestModel request,
+  );
 
-  Future<void> deleteComment(int commentId);
+  Future<void> deleteComment(String commentId);
 }
 
 class ProductReviewApiClient implements IProductReviewApiClient {
@@ -92,8 +106,8 @@ class ProductReviewApiClient implements IProductReviewApiClient {
 
   @override
   Future<ProductReviewCommentModel> addComment(
-    int reviewId,
-    ProductReviewCommentModel comment,
+    String reviewId,
+    SetProductReviewCommentRequestModel request,
   ) async {
     const query = r'''
       mutation CreateComment($input: CreateCommentInput!) {
@@ -108,7 +122,7 @@ class ProductReviewApiClient implements IProductReviewApiClient {
     final options = MutationOptions(
       document: gql(query),
       variables: <String, dynamic>{
-        'input': comment.toJson(),
+        'input': request.toJson(),
       },
     );
 
@@ -119,24 +133,13 @@ class ProductReviewApiClient implements IProductReviewApiClient {
   }
 
   @override
-  Future<ProductReviewModel> addReview(int productId, ProductReviewModel review) async {
+  Future<ProductReviewModel> addReview(int productId, SetProductReviewRequestModel request) async {
     const query = r'''
       mutation CreatePost($input: CreatePostInput!) {
         createPost (input: $input){
           id
           title 
           body
-          user {
-            id
-            username
-          }
-          comments {
-            data {
-              id
-              name
-              body
-            }
-          }
       }
     }
     ''';
@@ -145,7 +148,7 @@ class ProductReviewApiClient implements IProductReviewApiClient {
       document: gql(query),
       variables: <String, dynamic>{
         'pId': productId,
-        'input': review.toJson(),
+        'input': request.toJson(),
       },
     );
 
@@ -154,7 +157,7 @@ class ProductReviewApiClient implements IProductReviewApiClient {
   }
 
   @override
-  Future<void> deleteComment(int commentId) async {
+  Future<void> deleteComment(String commentId) async {
     const query = r'''
       mutation (
         $cId: ID!
@@ -174,11 +177,13 @@ class ProductReviewApiClient implements IProductReviewApiClient {
   }
 
   @override
-  Future<ProductReviewCommentModel> updateComment(ProductReviewCommentModel comment) async {
+  Future<ProductReviewCommentModel> updateComment(
+    String commentId,
+    SetProductReviewCommentRequestModel request,
+  ) async {
     const query = r'''
       mutation UpdateComment($rId: ID!, $input: UpdateCommentInput!) {
         updateComment (id: $rId, input: $input){
-          id
           name 
           body
       }
@@ -188,36 +193,27 @@ class ProductReviewApiClient implements IProductReviewApiClient {
     final options = MutationOptions(
       document: gql(query),
       variables: <String, dynamic>{
-        'rId': comment.id,
-        'input': comment.toJson(),
+        'rId': commentId,
+        'input': request.toJson(),
       },
     );
 
     final response = await _client.mutate(options);
-    return ProductReviewCommentModel.fromJson(
-      response.data!['updateComment'] as Map<String, dynamic>,
-    );
+    final json = response.data!['updateComment'] as Map<String, dynamic>;
+    json['id'] = commentId;
+    return ProductReviewCommentModel.fromJson(json);
   }
 
   @override
-  Future<ProductReviewModel> updateReview(ProductReviewModel review) async {
+  Future<ProductReviewModel> updateReview(
+    String reviewId,
+    SetProductReviewRequestModel request,
+  ) async {
     const query = r'''
       mutation UpdatePost($rId: ID!, $input: UpdatePostInput!) {
         updatePost (id: $rId, input: $input){
-          id
           title 
           body
-          user {
-            id
-            username
-          }
-          comments {
-            data {
-              id
-              name
-              body
-            }
-          }
       }
     }
     ''';
@@ -225,17 +221,19 @@ class ProductReviewApiClient implements IProductReviewApiClient {
     final options = MutationOptions(
       document: gql(query),
       variables: <String, dynamic>{
-        'rId': review,
-        'input': review.toJson(),
+        'rId': reviewId,
+        'input': request.toJson(),
       },
     );
 
     final response = await _client.mutate(options);
-    return ProductReviewModel.fromJson(response.data!['updatePost'] as Map<String, dynamic>);
+    final json = response.data!['updatePost'] as Map<String, dynamic>;
+    json['id'] = reviewId;
+    return ProductReviewModel.fromJson(json);
   }
 
   @override
-  Future<void> deleteReview(int reviewId) async {
+  Future<void> deleteReview(String reviewId) async {
     const query = r'''
       mutation (
         $rId: ID!

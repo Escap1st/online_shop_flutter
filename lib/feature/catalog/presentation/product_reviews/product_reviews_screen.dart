@@ -8,6 +8,8 @@ import '../../../../shared/presentation/widgets/screen_error_widget.dart';
 import '../../../../shared/presentation/widgets/screen_loading_widget.dart';
 import '../../domain/entities/product_review.dart';
 import '../../domain/entities/product_review_comment.dart';
+import 'providers/product_review_comment_modifications_provider.dart';
+import 'providers/product_review_modifications_provider.dart';
 import 'providers/product_reviews_provider.dart';
 
 class ProductReviewsScreen extends ConsumerWidget {
@@ -36,7 +38,7 @@ class ProductReviewsScreen extends ConsumerWidget {
         ),
       ),
       body: switch (reviewsState) {
-        AsyncData(:final value) => _Loaded(value),
+        AsyncData(:final value) => _Loaded(productId, value),
         AsyncLoading() => const ScreenLoadingWidget(),
         AsyncError(:final error, :final stackTrace) => ScreenErrorWidget(
             error: error,
@@ -50,16 +52,17 @@ class ProductReviewsScreen extends ConsumerWidget {
   }
 }
 
-class _Loaded extends StatefulWidget {
-  const _Loaded(this.reviews, {super.key});
+class _Loaded extends ConsumerStatefulWidget {
+  const _Loaded(this.productId, this.reviews, {super.key});
 
+  final int productId;
   final List<ProductReview> reviews;
 
   @override
-  State<_Loaded> createState() => _LoadedState();
+  ConsumerState<_Loaded> createState() => _LoadedState();
 }
 
-class _LoadedState extends State<_Loaded> {
+class _LoadedState extends ConsumerState<_Loaded> {
   final List<String> _expandedItems = [];
 
   @override
@@ -93,23 +96,26 @@ class _LoadedState extends State<_Loaded> {
                       return Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ClipOval(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 48,
-                                    width: 48,
-                                    color: theme.colorScheme.secondaryContainer,
-                                    child: Text(
-                                      e.user.username[0].toUpperCase(),
-                                      style: textTheme.headlineMedium,
+                                if (e.user != null) ...[
+                                  ClipOval(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 48,
+                                      width: 48,
+                                      color: theme.colorScheme.secondaryContainer,
+                                      child: Text(
+                                        e.user!.username[0].toUpperCase(),
+                                        style: textTheme.headlineMedium,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const Gap.h(16),
+                                  const Gap.h(16),
+                                ],
                                 Expanded(
                                   child: Text(
                                     e.title,
@@ -126,20 +132,41 @@ class _LoadedState extends State<_Loaded> {
                             const Gap.v(16),
                             Row(
                               children: e.photos
-                                  .take(3)
-                                  .map<Widget>(
-                                    (photo) => Expanded(
-                                      child: CachedNetworkImage(imageUrl: photo.thumbnailUrl),
-                                    ),
-                                  )
-                                  .separate(const Gap.h(8))
-                                  .toList(),
-                            )
+                                      ?.take(3)
+                                      .map<Widget>(
+                                        (photo) => Expanded(
+                                          child: CachedNetworkImage(imageUrl: photo.thumbnailUrl),
+                                        ),
+                                      )
+                                      .separate(const Gap.h(8))
+                                      .toList() ??
+                                  [],
+                            ),
+                            if (e.byCurrentUser) ...[
+                              const Gap.v(8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 16),
+                                    onPressed: () => _onChangeReview(e),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, size: 16),
+                                    onPressed: () => _onDeleteReview(e),
+                                  ),
+                                ],
+                              )
+                            ],
                           ],
                         ),
                       );
                     },
-                    body: _Comments(e.comments),
+                    body: _Comments(
+                      productId: widget.productId,
+                      reviewId: e.id,
+                      comments: e.comments ?? [],
+                    ),
                   ),
                 )
                 .toList(),
@@ -153,31 +180,70 @@ class _LoadedState extends State<_Loaded> {
             padding: const EdgeInsets.all(16),
             child: KitButton(
               label: 'Add review',
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => _EditReviewDialog(
-                    onSubmit: (title, body) {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                );
-              },
+              onPressed: _onAddReview,
             ),
           ),
         ],
       ),
     );
   }
+
+  void _onAddReview() {
+    showDialog(
+      context: context,
+      builder: (context) => _EditReviewDialog(
+        onSubmit: (title, body) {
+          ref.read(productReviewModificationsProvider.notifier).create(
+                productId: widget.productId,
+                title: title,
+                body: body,
+              );
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _onChangeReview(ProductReview review) {
+    showDialog(
+      context: context,
+      builder: (context) => _EditReviewDialog(
+        review: review,
+        onSubmit: (title, body) {
+          ref.read(productReviewModificationsProvider.notifier).change(
+                productId: widget.productId,
+                reviewId: review.id,
+                title: title,
+                body: body,
+              );
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _onDeleteReview(ProductReview review) {
+    ref.read(productReviewModificationsProvider.notifier).delete(
+          productId: widget.productId,
+          reviewId: review.id,
+        );
+  }
 }
 
-class _Comments extends StatelessWidget {
-  const _Comments(this.comments, {super.key});
+class _Comments extends ConsumerWidget {
+  const _Comments({
+    required this.productId,
+    required this.reviewId,
+    required this.comments,
+    super.key,
+  });
 
+  final int productId;
+  final String reviewId;
   final List<ProductReviewComment> comments;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
 
     return Column(
@@ -191,20 +257,42 @@ class _Comments extends StatelessWidget {
                   const Divider(),
                   Padding(
                     padding: const EdgeInsets.only(left: 48, right: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        const Gap.v(8),
-                        Text(
-                          e.name,
-                          style: textTheme.titleMedium,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Gap.v(8),
+                              Text(
+                                e.name,
+                                style: textTheme.titleMedium,
+                              ),
+                              const Gap.v(8),
+                              Text(
+                                e.body,
+                                style: textTheme.bodyLarge,
+                              ),
+                              const Gap.v(8),
+                            ],
+                          ),
                         ),
-                        const Gap.v(8),
-                        Text(
-                          e.body,
-                          style: textTheme.bodyLarge,
-                        ),
-                        const Gap.v(8),
+                        if (e.byCurrentUser) ...[
+                          const Gap.h(8),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, size: 16),
+                                onPressed: () => _onChangeComment(context, e, ref),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, size: 16),
+                                onPressed: () => _onDeleteComment(e, ref),
+                              ),
+                            ],
+                          )
+                        ],
                       ],
                     ),
                   ),
@@ -216,26 +304,64 @@ class _Comments extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: KitButton(
             label: 'Add comment',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => _EditCommentDialog(
-                  onSubmit: (body) {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              );
-            },
+            onPressed: () => _onAddComment(context, ref),
           ),
         ),
       ],
     );
   }
+
+  void _onAddComment(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => _EditCommentDialog(
+        onSubmit: (body) {
+          ref.read(productReviewCommentModificationsProvider.notifier).create(
+                productId: productId,
+                reviewId: reviewId,
+                body: body,
+              );
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _onChangeComment(BuildContext context, ProductReviewComment comment, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => _EditCommentDialog(
+        comment: comment,
+        onSubmit: (body) {
+          ref
+              .read(
+                productReviewCommentModificationsProvider.notifier,
+              )
+              .change(
+                productId: productId,
+                reviewId: reviewId,
+                commentId: comment.id,
+                body: body,
+              );
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _onDeleteComment(ProductReviewComment comment, WidgetRef ref) {
+    ref.read(productReviewCommentModificationsProvider.notifier).delete(
+          productId: productId,
+          reviewId: reviewId,
+          commentId: comment.id,
+        );
+  }
 }
 
 class _EditReviewDialog extends StatefulWidget {
-  const _EditReviewDialog({required this.onSubmit, super.key});
+  const _EditReviewDialog({required this.onSubmit, this.review, super.key});
 
+  final ProductReview? review;
   final void Function(String, String) onSubmit;
 
   @override
@@ -243,8 +369,8 @@ class _EditReviewDialog extends StatefulWidget {
 }
 
 class _EditReviewDialogState extends State<_EditReviewDialog> {
-  late final _titleController = TextEditingController();
-  late final _bodyController = TextEditingController();
+  late final _titleController = TextEditingController(text: widget.review?.title);
+  late final _bodyController = TextEditingController(text: widget.review?.body);
   late final _bodyFocus = FocusNode();
 
   @override
@@ -295,8 +421,9 @@ class _EditReviewDialogState extends State<_EditReviewDialog> {
 }
 
 class _EditCommentDialog extends StatefulWidget {
-  const _EditCommentDialog({required this.onSubmit, super.key});
+  const _EditCommentDialog({required this.onSubmit, this.comment, super.key});
 
+  final ProductReviewComment? comment;
   final void Function(String) onSubmit;
 
   @override
@@ -304,7 +431,7 @@ class _EditCommentDialog extends StatefulWidget {
 }
 
 class _EditCommentDialogState extends State<_EditCommentDialog> {
-  late final _bodyController = TextEditingController();
+  late final _bodyController = TextEditingController(text: widget.comment?.body);
 
   @override
   void dispose() {

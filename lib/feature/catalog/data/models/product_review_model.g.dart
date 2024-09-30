@@ -11,9 +11,13 @@ ProductReviewModel _$ProductReviewModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       title: json['title'] as String,
       body: json['body'] as String,
-      user: ProductReviewerModel.fromJson(json['user'] as Map<String, dynamic>),
-      comments: ProductReviewCommentsPageModel.fromJson(
-          json['comments'] as Map<String, dynamic>),
+      user: json['user'] == null
+          ? null
+          : ProductReviewerModel.fromJson(json['user'] as Map<String, dynamic>),
+      comments: json['comments'] == null
+          ? null
+          : ProductReviewCommentsPageModel.fromJson(
+              json['comments'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ProductReviewModelToJson(ProductReviewModel instance) =>

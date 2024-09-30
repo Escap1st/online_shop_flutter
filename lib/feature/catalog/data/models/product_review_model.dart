@@ -21,8 +21,8 @@ class ProductReviewModel {
   final String id;
   final String title;
   final String body;
-  final ProductReviewerModel user;
-  final ProductReviewCommentsPageModel comments;
+  final ProductReviewerModel? user;
+  final ProductReviewCommentsPageModel? comments;
 
   Json toJson() => _$ProductReviewModelToJson(this);
 }

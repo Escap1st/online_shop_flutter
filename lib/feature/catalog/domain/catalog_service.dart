@@ -1,10 +1,14 @@
 import 'package:collection/collection.dart';
 
 import '../../../shared/domain/entities/paged_response.dart';
+import '../../authentication/domain/repositories/authentication_repository.dart';
 import 'entities/product.dart';
 import 'entities/product_category.dart';
 import 'entities/product_review.dart';
 import 'entities/product_review_comment.dart';
+import 'entities/product_reviewer.dart';
+import 'entities/set_product_review_comment_request.dart';
+import 'entities/set_product_review_request.dart';
 import 'repositories/product_repository.dart';
 
 abstract interface class ICatalogService {
@@ -18,25 +22,34 @@ abstract interface class ICatalogService {
 
   Future<List<ProductReview>> getReviews({required int productId});
 
-  Future<ProductReview> addReview(int productId, ProductReview review);
+  Future<ProductReview> addReview(int productId, SetProductReviewRequest request);
 
-  Future<ProductReview> updateReview(ProductReview review);
+  Future<ProductReview> updateReview(String reviewId, SetProductReviewRequest request);
 
-  Future<void> deleteReview(int reviewId);
+  Future<void> deleteReview(String reviewId);
 
-  Future<ProductReviewComment> addComment(int reviewId, ProductReviewComment comment);
+  Future<ProductReviewComment> addComment(
+    String reviewId,
+    SetProductReviewCommentRequest request,
+  );
 
-  Future<ProductReviewComment> updateComment(ProductReviewComment comment);
+  Future<ProductReviewComment> updateComment(
+    String commentId,
+    SetProductReviewCommentRequest request,
+  );
 
-  Future<void> deleteComment(int commentId);
+  Future<void> deleteComment(String commentId);
 }
 
 class CatalogService implements ICatalogService {
   CatalogService({
     required IProductRepository productRepository,
-  }) : _productRepository = productRepository;
+    required IAuthenticationRepository authenticationRepository,
+  })  : _productRepository = productRepository,
+        _authenticationRepository = authenticationRepository;
 
   final IProductRepository _productRepository;
+  final IAuthenticationRepository _authenticationRepository;
 
   @override
   Future<PagedResponse<Product>> getProducts({required int offset, required int limit}) async {
@@ -86,24 +99,59 @@ class CatalogService implements ICatalogService {
   }
 
   @override
-  Future<ProductReviewComment> addComment(int reviewId, ProductReviewComment comment) =>
-      _productRepository.addComment(reviewId, comment);
+  Future<ProductReviewComment> addComment(
+    String reviewId,
+    SetProductReviewCommentRequest request,
+  ) async {
+    final login = await _authenticationRepository.getLogin() ?? 'Anonymous';
+    final comment = await _productRepository.addComment(
+      reviewId,
+      request.copyWith(name: login),
+    );
+    return comment.copyWith(byCurrentUser: true);
+  }
 
   @override
-  Future<ProductReview> addReview(int productId, ProductReview review) =>
-      _productRepository.addReview(productId, review);
+  Future<ProductReview> addReview(int productId, SetProductReviewRequest request) async {
+    final review = await _productRepository.addReview(productId, request);
+    return _addUserInfoToReview(review);
+  }
 
   @override
-  Future<void> deleteComment(int commentId) => _productRepository.deleteComment(commentId);
+  Future<void> deleteComment(String commentId) =>
+      _productRepository.deleteComment(commentId);
 
   @override
-  Future<void> deleteReview(int reviewId) => _productRepository.deleteReview(reviewId);
+  Future<void> deleteReview(String reviewId) => _productRepository.deleteReview(reviewId);
 
   @override
-  Future<ProductReviewComment> updateComment(ProductReviewComment comment) =>
-      _productRepository.updateComment(comment);
+  Future<ProductReviewComment> updateComment(
+    String commentId,
+    SetProductReviewCommentRequest request,
+  ) async {
+    final login = await _authenticationRepository.getLogin() ?? 'Anonymous';
+    final comment = await _productRepository.updateComment(
+      commentId,
+      request.copyWith(name: login),
+    );
+    return comment.copyWith(byCurrentUser: true);
+  }
 
   @override
-  Future<ProductReview> updateReview(ProductReview review) =>
-      _productRepository.updateReview(review);
+  Future<ProductReview> updateReview(String reviewId, SetProductReviewRequest request) async {
+    final review = await _productRepository.updateReview(reviewId, request);
+    return _addUserInfoToReview(review);
+  }
+
+  Future<ProductReview> _addUserInfoToReview(ProductReview review) async {
+    final id = await _authenticationRepository.getUserId();
+    final login = await _authenticationRepository.getLogin();
+
+    return id != null && login != null
+        ? review.copyWith(
+            user: ProductReviewer(id: id, username: login),
+            byCurrentUser: true,
+          )
+        : review;
+  }
 }

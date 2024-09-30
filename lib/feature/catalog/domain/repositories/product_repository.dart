@@ -4,6 +4,8 @@ import '../entities/product_category.dart';
 import '../entities/product_review.dart';
 import '../entities/product_review_comment.dart';
 import '../entities/product_review_photo.dart';
+import '../entities/set_product_review_comment_request.dart';
+import '../entities/set_product_review_request.dart';
 
 abstract interface class IProductRepository {
   Future<PagedResponse<Product>> getProducts({required int offset, required int limit});
@@ -16,15 +18,21 @@ abstract interface class IProductRepository {
 
   Future<List<ProductReviewPhoto>> getReviewPhotos(String reviewId);
 
-  Future<ProductReview> addReview(int productId, ProductReview review);
+  Future<ProductReview> addReview(int productId, SetProductReviewRequest request);
 
-  Future<ProductReview> updateReview(ProductReview review);
+  Future<ProductReview> updateReview(String reviewId, SetProductReviewRequest request);
 
-  Future<void> deleteReview(int reviewId);
+  Future<void> deleteReview(String reviewId);
 
-  Future<ProductReviewComment> addComment(int reviewId, ProductReviewComment comment);
+  Future<ProductReviewComment> addComment(
+    String reviewId,
+    SetProductReviewCommentRequest request,
+  );
 
-  Future<ProductReviewComment> updateComment(ProductReviewComment comment);
+  Future<ProductReviewComment> updateComment(
+    String commentId,
+    SetProductReviewCommentRequest request,
+  );
 
-  Future<void> deleteComment(int commentId);
+  Future<void> deleteComment(String commentId);
 }

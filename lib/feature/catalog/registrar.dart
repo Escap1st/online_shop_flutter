@@ -12,6 +12,8 @@ import 'presentation/catalog_filter/providers/catalog_filters_data_provider/cata
 import 'presentation/catalog_filter/providers/product_categories_provider.dart';
 import 'presentation/common_providers/products_by_ids_provider.dart';
 import 'presentation/product_details/providers/product_details_provider.dart';
+import 'presentation/product_reviews/providers/product_review_comment_modifications_provider.dart';
+import 'presentation/product_reviews/providers/product_review_modifications_provider.dart';
 import 'presentation/product_reviews/providers/product_reviews_provider.dart';
 
 class CatalogRegistrar implements IRegistrar {
@@ -30,7 +32,10 @@ class CatalogRegistrar implements IRegistrar {
       ),
     );
     registerLazySingletonDependency<ICatalogService>(
-      () => CatalogService(productRepository: resolveDependency()),
+      () => CatalogService(
+        productRepository: resolveDependency(),
+        authenticationRepository: resolveDependency(),
+      ),
     );
     registerFactoryDependency(
       () => ProductListNotifier(catalogService: resolveDependency()),
@@ -55,6 +60,16 @@ class CatalogRegistrar implements IRegistrar {
     );
     registerFactoryDependency(
       () => ProductsByIdsNotifier(
+        catalogService: resolveDependency(),
+      ),
+    );
+    registerFactoryDependency(
+      () => ProductReviewModificationsNotifier(
+        catalogService: resolveDependency(),
+      ),
+    );
+    registerFactoryDependency(
+      () => ProductReviewCommentModificationsNotifier(
         catalogService: resolveDependency(),
       ),
     );

@@ -1,3 +1,4 @@
+import '../../../../core/utils/extensions.dart';
 import '../../../../shared/data/mappers/mapper.dart';
 import '../../domain/entities/product_review.dart';
 import '../models/product_review_model.dart';
@@ -16,8 +17,8 @@ class ProductReviewMapper implements EntityMapper<ProductReview, ProductReviewMo
       id: model.id,
       title: model.title,
       body: model.body,
-      user: ProductReviewerMapper().toEntity(model.user),
-      comments: model.comments.data.map(ProductReviewCommentMapper().toEntity).toList(),
+      user: model.user?.let((it) => ProductReviewerMapper().toEntity(it)),
+      comments: model.comments?.data.map(ProductReviewCommentMapper().toEntity).toList() ?? [],
       photos: const [],
     );
   }
