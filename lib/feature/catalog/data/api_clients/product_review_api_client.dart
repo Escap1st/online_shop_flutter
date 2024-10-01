@@ -69,12 +69,11 @@ class ProductReviewApiClient implements IProductReviewApiClient {
       variables: <String, dynamic>{
         'pId': productId,
       },
+      parserFn: (data) => ProductReviewModel.fromJson(data['post'] as Map<String, dynamic>),
     );
 
-    final response = await _client.query(options);
-    return [
-      ProductReviewModel.fromJson(response.data!['post'] as Map<String, dynamic>),
-    ];
+    final result = await _client.query(options);
+    return [result.parsedData!];
   }
 
   @override
@@ -94,14 +93,15 @@ class ProductReviewApiClient implements IProductReviewApiClient {
     ''';
 
     final options = QueryOptions(
-      document: gql(query),
-      variables: <String, dynamic>{
-        'aId': reviewId,
-      },
-    );
+        document: gql(query),
+        variables: <String, dynamic>{
+          'aId': reviewId,
+        },
+        parserFn: (data) =>
+            ProductReviewAlbumModel.fromJson(data['album'] as Map<String, dynamic>));
 
     final result = await _client.query(options);
-    return ProductReviewAlbumModel.fromJson(result.data!['album'] as Map<String, dynamic>);
+    return result.parsedData!;
   }
 
   @override
@@ -124,12 +124,11 @@ class ProductReviewApiClient implements IProductReviewApiClient {
       variables: <String, dynamic>{
         'input': request.toJson(),
       },
+      parserFn: (data) => data['createComment'] as Map<String, dynamic>,
     );
 
-    final response = await _client.mutate(options);
-    return ProductReviewCommentModel.fromJson(
-      response.data!['createComment'] as Map<String, dynamic>,
-    );
+    final result = await _client.mutate(options);
+    return ProductReviewCommentModel.fromJson(result.parsedData!);
   }
 
   @override
@@ -150,10 +149,11 @@ class ProductReviewApiClient implements IProductReviewApiClient {
         'pId': productId,
         'input': request.toJson(),
       },
+      parserFn: (data) => ProductReviewModel.fromJson(data['createPost'] as Map<String, dynamic>),
     );
 
-    final response = await _client.mutate(options);
-    return ProductReviewModel.fromJson(response.data!['createPost'] as Map<String, dynamic>);
+    final result = await _client.mutate(options);
+    return result.parsedData!;
   }
 
   @override
@@ -196,12 +196,15 @@ class ProductReviewApiClient implements IProductReviewApiClient {
         'rId': commentId,
         'input': request.toJson(),
       },
+      parserFn: (data) {
+        final json = data['updateComment'] as Map<String, dynamic>;
+        json['id'] = commentId;
+        return ProductReviewCommentModel.fromJson(json);
+      }
     );
 
-    final response = await _client.mutate(options);
-    final json = response.data!['updateComment'] as Map<String, dynamic>;
-    json['id'] = commentId;
-    return ProductReviewCommentModel.fromJson(json);
+    final result = await _client.mutate(options);
+    return result.parsedData!;
   }
 
   @override
@@ -224,12 +227,15 @@ class ProductReviewApiClient implements IProductReviewApiClient {
         'rId': reviewId,
         'input': request.toJson(),
       },
+      parserFn: (data) {
+        final json = data['updatePost'] as Map<String, dynamic>;
+        json['id'] = reviewId;
+        return ProductReviewModel.fromJson(json);
+      }
     );
 
-    final response = await _client.mutate(options);
-    final json = response.data!['updatePost'] as Map<String, dynamic>;
-    json['id'] = reviewId;
-    return ProductReviewModel.fromJson(json);
+    final result = await _client.mutate(options);
+    return result.parsedData!;
   }
 
   @override
